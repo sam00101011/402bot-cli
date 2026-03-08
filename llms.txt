@@ -1,0 +1,32 @@
+# 402.bot Discovery Oracle
+
+> Public metadata companion for the live 402.bot MCP server.
+
+- Runtime: https://api.402.bot/mcp
+- Setup: https://api.402.bot/mcp/setup
+- Setup markdown: https://api.402.bot/mcp/setup.md
+- Homepage: https://402.bot
+- Official MCP Registry: bot.402/discovery-oracle
+
+## Description
+
+Discover and inspect live agent APIs. Search ranked endpoints, inspect trust and payment telemetry, and analyze agent usage through a read-only MCP surface built for x402 and agent API discovery.
+
+## Tools
+
+- discover_endpoints: Search ranked live endpoints by capability, network, discovery source, and strategy.
+- inspect_endpoint: Inspect endpoint trust, probe freshness, payment activity, and routing telemetry.
+- inspect_agent: Inspect wallet-level routing and payment analytics.
+
+## Resources
+
+- https://api.402.bot/mcp/resources/agent-metadata
+- https://api.402.bot/mcp/resources/capability-catalog
+- https://api.402.bot/mcp/resources/top-capabilities
+- https://api.402.bot/mcp/resources/example-queries
+- https://api.402.bot/mcp/resources/paid-surfaces
+- https://api.402.bot/mcp/resources/setup-notes
+
+## Install
+
+See ./llms-install.md

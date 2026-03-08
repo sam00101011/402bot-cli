@@ -1,0 +1,13 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "bot.402/discovery-oracle",
+  "description": "Discover live agent APIs, ranked endpoints, trust, payment telemetry, and x402 surfaces.",
+  "status": "active",
+  "version": "1.0.1-beta",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.402.bot/mcp"
+    }
+  ]
+}
