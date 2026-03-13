@@ -1,49 +1,60 @@
-# 402.bot Discovery Oracle
+# 402bot CLI
 
-Public metadata and install companion for the live `402.bot` MCP server.
+Public npm package and release repo for the `402bot` CLI.
 
-This repository is intentionally minimal. It exists so MCP directories and agent marketplaces can review a public repository without exposing the private implementation codebase.
-
-## Live Server
-
-- Runtime: `https://api.402.bot/mcp`
-- Setup page: `https://api.402.bot/mcp/setup`
-- Setup markdown: `https://api.402.bot/mcp/setup.md`
-- Homepage: `https://402.bot`
-- `llms.txt`: `https://402.bot/llms.txt`
-- Official MCP Registry: `bot.402/discovery-oracle`
-- Smithery: `https://smithery.ai/servers/bot402/discovery-oracle`
-
-## Description
-
-Discover and inspect live agent APIs. Search ranked endpoints, inspect trust and payment telemetry, and analyze agent usage through a read-only MCP surface built for x402 and agent API discovery.
-
-## Tools
-
-- `discover_endpoints`: search ranked live endpoints by capability, network, discovery source, and strategy
-- `inspect_endpoint`: inspect endpoint trust, probe freshness, payment activity, and routing telemetry
-- `inspect_agent`: inspect wallet-level routing and payment analytics
-
-## Resources
-
-- `https://api.402.bot/mcp/resources/agent-metadata`
-- `https://api.402.bot/mcp/resources/capability-catalog`
-- `https://api.402.bot/mcp/resources/top-capabilities`
-- `https://api.402.bot/mcp/resources/example-queries`
-- `https://api.402.bot/mcp/resources/paid-surfaces`
-- `https://api.402.bot/mcp/resources/setup-notes`
-
-## Transport
-
-- Remote MCP
-- `streamable-http`
-- Public, stateless, read-only
-- No API key required in v1
+`402bot` is a product wrapper around [`x402-proxy`](https://github.com/cascade-protocol/x402-proxy). It gives users a direct CLI for the public `402.bot` MCP and paid HTTP surfaces without requiring them to memorize raw URLs.
 
 ## Install
 
-See [llms-install.md](./llms-install.md) for copy-paste setup snippets for Claude Desktop, Claude Code, Cursor, Codex CLI, Gemini CLI, OpenClaw guidance, and generic remote MCP JSON.
+```bash
+npx 402bot
+```
+
+## Commands
+
+```bash
+402bot setup
+402bot status
+402bot wallet
+
+402bot mcp
+402bot mcp --campaign-id codex-mcp-setup
+
+402bot route --body '{"goal":"find a weather api on Base"}'
+402bot materialize --body '{"templateId":"wallet_portfolio","parameters":{"wallet":"0x..."}}'
+402bot fetch-transform --body '{"sourceId":"openweather_current","params":{"city":"Tokyo"}}'
+
+402bot recipes
+402bot recipe run wallet-intel-brief --body '{}'
+
+402bot polymarket performance 0x1234...
+402bot polymarket order --body '{"market":"..."}'
+```
+
+## Public 402.bot surfaces
+
+- MCP runtime: `https://api.402.bot/mcp`
+- MCP setup page: `https://api.402.bot/mcp/setup`
+- HTTP API base: `https://api.402.bot`
+- Homepage: `https://402.bot`
+
+See [llms-install.md](./llms-install.md) for the copy-paste MCP installation snippets for desktop and CLI clients.
+
+## Publish
+
+This repo publishes the npm package `402bot`.
+
+- GitHub Actions workflow: `.github/workflows/publish.yml`
+- npm secret required: `NPM_TOKEN`
+- tag format: `v<package-version>`
+
+Example:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
 
 ## Repo Scope
 
-This repo is documentation and directory metadata only. The production runtime remains hosted at `https://api.402.bot/mcp`.
+This repo is the public home for the CLI package only. The full `402.bot` product/runtime remains private.

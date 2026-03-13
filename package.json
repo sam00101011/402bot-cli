@@ -1,0 +1,40 @@
+{
+  "name": "402bot",
+  "version": "0.1.0",
+  "description": "402.bot CLI powered by x402-proxy",
+  "type": "module",
+  "bin": "./index.js",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "bun test tests/402bot-cli.test.ts"
+  },
+  "keywords": [
+    "402bot",
+    "x402",
+    "mcp",
+    "base",
+    "usdc",
+    "cli"
+  ],
+  "homepage": "https://github.com/sam00101011/402bot-cli",
+  "bugs": {
+    "url": "https://github.com/sam00101011/402bot-cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sam00101011/402bot-cli.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "x402-proxy": "^0.3.2"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
