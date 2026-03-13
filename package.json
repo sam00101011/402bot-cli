@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "402.bot CLI powered by x402-proxy",
   "type": "module",
-  "bin": "./index.js",
+  "bin": {
+  "402bot": "./index.js"
+},
   "files": [
     "index.js",
     "README.md"
