@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
@@ -202,6 +202,42 @@ function buildRemoteMcpUrl(remoteUrl, campaignId) {
   return url.toString();
 }
 
+function extractGlobalCliOptions(argv) {
+  const args = [];
+  let jsonOutput = false;
+
+  for (const arg of argv) {
+    if (arg === "--json" || arg === "--json=true") {
+      jsonOutput = true;
+      continue;
+    }
+    if (arg === "--json=false") {
+      continue;
+    }
+    args.push(arg);
+  }
+
+  return {
+    args,
+    jsonOutput,
+  };
+}
+
+function withJsonOutput(invocation, jsonOutput) {
+  if (!jsonOutput) {
+    return invocation;
+  }
+
+  if (invocation.type === "http" || invocation.type === "local" || invocation.type === "print") {
+    return {
+      ...invocation,
+      jsonOutput: true,
+    };
+  }
+
+  return invocation;
+}
+
 function isHelpFlag(value) {
   return value === "--help" || value === "-h" || value === "help";
 }
@@ -347,7 +383,7 @@ function buildMcpInvocation(args, env = process.env) {
   };
 }
 
-function buildDiscoverInvocation(args, env = process.env) {
+function buildDiscoverInvocation(args, env = process.env, cliOptions = {}) {
   const parsed = parseOptionArgs(args, GOAL_OPTION_SPECS);
   if (!parsed.ok) {
     return { type: "error", message: parsed.message };
@@ -358,7 +394,7 @@ function buildDiscoverInvocation(args, env = process.env) {
     return { type: "error", message: 'Usage: 402bot discover "<goal>" [--network ...] [--strategy ...] [--limit ...] [--budget ...]' };
   }
 
-  return buildHttpInvocation(
+  return withJsonOutput(buildHttpInvocation(
     `${apiBaseUrl(env)}/v1/discover/goal`,
     "POST",
     "discover",
@@ -370,10 +406,10 @@ function buildDiscoverInvocation(args, env = process.env) {
       limit: parsed.options.limit ?? DEFAULT_DISCOVER_LIMIT,
       ...(parsed.options.budgetUsdc === undefined ? {} : { budgetUsdc: parsed.options.budgetUsdc }),
     },
-  );
+  ), cliOptions.jsonOutput);
 }
 
-function buildInspectInvocation(args, env = process.env) {
+function buildInspectInvocation(args, env = process.env, cliOptions = {}) {
   const parsed = parseOptionArgs(args, LOOKBACK_OPTION_SPECS.concat([
     {
       flags: ["--network"],
@@ -393,7 +429,7 @@ function buildInspectInvocation(args, env = process.env) {
   const normalizedAgent = normalizeAgentTarget(rawTarget);
 
   if (normalizedAgent) {
-    return buildHttpInvocation(
+    return withJsonOutput(buildHttpInvocation(
       buildUrlWithQuery(`${apiBaseUrl(env)}/analytics/agent/${encodeURIComponent(normalizedAgent)}`, {
         days,
         ...(parsed.options.network ? { network: parsed.options.network } : {}),
@@ -401,21 +437,21 @@ function buildInspectInvocation(args, env = process.env) {
       "GET",
       "inspect_agent",
       { target: normalizedAgent },
-    );
+    ), cliOptions.jsonOutput);
   }
 
   const endpointId = normalizeEndpointTarget(rawTarget);
-  return buildHttpInvocation(
+  return withJsonOutput(buildHttpInvocation(
     buildUrlWithQuery(`${apiBaseUrl(env)}/analytics/endpoint/${encodeURIComponent(endpointId)}`, {
       days,
     }),
     "GET",
     "inspect_endpoint",
     { target: endpointId },
-  );
+  ), cliOptions.jsonOutput);
 }
 
-function buildCompareInvocation(args, env = process.env) {
+function buildCompareInvocation(args, env = process.env, cliOptions = {}) {
   const parsed = parseOptionArgs(args, GOAL_OPTION_SPECS.concat(LOOKBACK_OPTION_SPECS));
   if (!parsed.ok) {
     return { type: "error", message: parsed.message };
@@ -426,7 +462,7 @@ function buildCompareInvocation(args, env = process.env) {
     return { type: "error", message: 'Usage: 402bot compare "<goal>" [--network ...] [--strategy ...] [--limit ...] [--budget ...] [--days 30]' };
   }
 
-  return {
+  return withJsonOutput({
     type: "local",
     action: "compare_goal",
     baseUrl: apiBaseUrl(env),
@@ -436,10 +472,10 @@ function buildCompareInvocation(args, env = process.env) {
     limit: parsed.options.limit ?? DEFAULT_COMPARE_LIMIT,
     budgetUsdc: parsed.options.budgetUsdc,
     days: parsed.options.days ?? DEFAULT_LOOKBACK_DAYS,
-  };
+  }, cliOptions.jsonOutput);
 }
 
-function buildPromptInvocation(args, env = process.env) {
+function buildPromptInvocation(args, env = process.env, cliOptions = {}) {
   const parsed = parseOptionArgs(args, GOAL_OPTION_SPECS);
   if (!parsed.ok) {
     return { type: "error", message: parsed.message };
@@ -450,7 +486,7 @@ function buildPromptInvocation(args, env = process.env) {
     return { type: "error", message: 'Usage: 402bot prompt "<goal>" [--network ...] [--strategy ...] [--limit ...] [--budget ...]' };
   }
 
-  return {
+  return withJsonOutput({
     type: "local",
     action: "prompt_goal",
     baseUrl: apiBaseUrl(env),
@@ -459,10 +495,10 @@ function buildPromptInvocation(args, env = process.env) {
     strategy: parsed.options.strategy ?? "balanced",
     limit: parsed.options.limit ?? DEFAULT_DISCOVER_LIMIT,
     budgetUsdc: parsed.options.budgetUsdc,
-  };
+  }, cliOptions.jsonOutput);
 }
 
-function buildPlanInvocation(args, env = process.env) {
+function buildPlanInvocation(args, env = process.env, cliOptions = {}) {
   const parsed = parseOptionArgs(args, GOAL_OPTION_SPECS.concat(LOOKBACK_OPTION_SPECS));
   if (!parsed.ok) {
     return { type: "error", message: parsed.message };
@@ -473,7 +509,7 @@ function buildPlanInvocation(args, env = process.env) {
     return { type: "error", message: 'Usage: 402bot plan "<task>" [--network ...] [--strategy ...] [--limit ...] [--budget ...] [--days 30]' };
   }
 
-  return {
+  return withJsonOutput({
     type: "local",
     action: "plan_goal",
     baseUrl: apiBaseUrl(env),
@@ -483,10 +519,10 @@ function buildPlanInvocation(args, env = process.env) {
     limit: parsed.options.limit ?? DEFAULT_COMPARE_LIMIT,
     budgetUsdc: parsed.options.budgetUsdc,
     days: parsed.options.days ?? DEFAULT_LOOKBACK_DAYS,
-  };
+  }, cliOptions.jsonOutput);
 }
 
-function buildRecipeInvocation(args, env = process.env) {
+function buildRecipeInvocation(args, env = process.env, cliOptions = {}) {
   const [action, ...rest] = args;
 
   if (action === "run") {
@@ -510,7 +546,7 @@ function buildRecipeInvocation(args, env = process.env) {
       return { type: "error", message: "recipe list does not take positional arguments." };
     }
 
-    return buildHttpInvocation(
+    return withJsonOutput(buildHttpInvocation(
       buildUrlWithQuery(`${apiBaseUrl(env)}/v1/recipes`, {
         limit: parsed.options.limit ?? DEFAULT_RECIPE_LIMIT,
         cluster: parsed.options.cluster,
@@ -522,7 +558,7 @@ function buildRecipeInvocation(args, env = process.env) {
       "GET",
       "recipes",
       { mode: "list" },
-    );
+    ), cliOptions.jsonOutput);
   }
 
   if (action === "search") {
@@ -536,7 +572,7 @@ function buildRecipeInvocation(args, env = process.env) {
       return { type: "error", message: 'Usage: 402bot recipe search "<query>" [--cluster ...] [--capability ...] [--limit ...] [--max-price ...]' };
     }
 
-    return buildHttpInvocation(
+    return withJsonOutput(buildHttpInvocation(
       buildUrlWithQuery(`${apiBaseUrl(env)}/v1/recipes/search`, {
         q: query,
         limit: parsed.options.limit ?? DEFAULT_RECIPE_LIMIT,
@@ -549,7 +585,7 @@ function buildRecipeInvocation(args, env = process.env) {
       "GET",
       "recipes",
       { mode: "search", query },
-    );
+    ), cliOptions.jsonOutput);
   }
 
   return {
@@ -687,7 +723,7 @@ function buildPolymarketInvocation(args, env = process.env) {
   }
 }
 
-function buildInitInvocation(args, env = process.env) {
+function buildInitInvocation(args, env = process.env, cliOptions = {}) {
   const [target, ...rest] = args;
   if (target !== "agent") {
     return { type: "error", message: "Usage: 402bot init agent [claude|claude-code|cursor|codex|gemini|all] [--campaign-id ...]" };
@@ -703,14 +739,17 @@ function buildInitInvocation(args, env = process.env) {
     return { type: "error", message: `Unknown init agent target: ${client}` };
   }
 
-  return {
+  const payload = buildInitAgentPayload({
+    client,
+    campaignId: parsed.options.campaignId,
+    env,
+  });
+
+  return withJsonOutput({
     type: "print",
-    text: buildInitAgentText({
-      client,
-      campaignId: parsed.options.campaignId,
-      env,
-    }),
-  };
+    text: buildInitAgentText(payload),
+    data: payload,
+  }, cliOptions.jsonOutput);
 }
 
 function buildRunInvocation(args, env = process.env) {
@@ -792,25 +831,12 @@ function buildRecipeRunFromInput(slug, input, env = process.env) {
   );
 }
 
-function buildInitAgentText({ client, campaignId, env = process.env }) {
+function buildInitAgentPayload({ client, campaignId, env = process.env }) {
   const remoteUrl = buildRemoteMcpUrl(mcpBaseUrl(env), campaignId);
   const campaignLabel = campaignId ?? "<your-campaign-id>";
-  const sections = [
-    "Use these defaults for agent installs:",
-    "",
-    `BOT402_API_URL=${apiBaseUrl(env)}`,
-    `BOT402_MCP_URL=${mcpBaseUrl(env)}`,
-    `BOT402_CAMPAIGN_ID=${campaignLabel}`,
-    "",
-    "Remote MCP URL:",
-    remoteUrl,
-    "",
-    "First prompt:",
-    INIT_AGENT_FIRST_PROMPT,
-  ];
-
   const snippets = {
     claude: {
+      id: "claude",
       title: "Claude Desktop",
       body: JSON.stringify({
         mcpServers: {
@@ -822,6 +848,7 @@ function buildInitAgentText({ client, campaignId, env = process.env }) {
       }, null, 2),
     },
     "claude-code": {
+      id: "claude-code",
       title: "Claude Code",
       body: `claude mcp add-json 402bot '${JSON.stringify({
         type: "http",
@@ -829,6 +856,7 @@ function buildInitAgentText({ client, campaignId, env = process.env }) {
       })}'`,
     },
     cursor: {
+      id: "cursor",
       title: "Cursor",
       body: JSON.stringify({
         mcpServers: {
@@ -839,6 +867,7 @@ function buildInitAgentText({ client, campaignId, env = process.env }) {
       }, null, 2),
     },
     codex: {
+      id: "codex",
       title: "Codex CLI",
       body: [
         `codex mcp add 402bot --url ${remoteUrl}`,
@@ -848,6 +877,7 @@ function buildInitAgentText({ client, campaignId, env = process.env }) {
       ].join("\n"),
     },
     gemini: {
+      id: "gemini",
       title: "Gemini CLI",
       body: JSON.stringify({
         mcpServers: {
@@ -864,16 +894,53 @@ function buildInitAgentText({ client, campaignId, env = process.env }) {
     ? ["claude", "claude-code", "cursor", "codex", "gemini"]
     : [client];
 
-  for (const target of selectedTargets) {
-    sections.push("", `${snippets[target].title}:`, snippets[target].body);
+  return {
+    apiBaseUrl: apiBaseUrl(env),
+    mcpBaseUrl: mcpBaseUrl(env),
+    campaignId: campaignId ?? null,
+    remoteMcpUrl: remoteUrl,
+    firstPrompt: INIT_AGENT_FIRST_PROMPT,
+    envDefaults: {
+      BOT402_API_URL: apiBaseUrl(env),
+      BOT402_MCP_URL: mcpBaseUrl(env),
+      BOT402_CAMPAIGN_ID: campaignLabel,
+    },
+    clients: selectedTargets.map((target) => ({
+      id: snippets[target].id,
+      title: snippets[target].title,
+      snippet: snippets[target].body,
+    })),
+    nextCommands: [
+      "402bot mcp --campaign-id defi-agent-alpha",
+      '402bot discover "find the best live Base wallet-intelligence or risk API for an autonomous trading agent"',
+      "402bot inspect <endpoint-id>",
+    ],
+  };
+}
+
+function buildInitAgentText(payload) {
+  const sections = [
+    "Use these defaults for agent installs:",
+    "",
+    `BOT402_API_URL=${payload.envDefaults.BOT402_API_URL}`,
+    `BOT402_MCP_URL=${payload.envDefaults.BOT402_MCP_URL}`,
+    `BOT402_CAMPAIGN_ID=${payload.envDefaults.BOT402_CAMPAIGN_ID}`,
+    "",
+    "Remote MCP URL:",
+    payload.remoteMcpUrl,
+    "",
+    "First prompt:",
+    payload.firstPrompt,
+  ];
+
+  for (const client of payload.clients) {
+    sections.push("", `${client.title}:`, client.snippet);
   }
 
   sections.push(
     "",
     "Walleted execution still runs through this CLI:",
-    "402bot mcp --campaign-id defi-agent-alpha",
-    '402bot discover "find the best live Base wallet-intelligence or risk API for an autonomous trading agent"',
-    "402bot inspect <endpoint-id>",
+    ...payload.nextCommands,
   );
 
   return sections.join("\n");
@@ -897,6 +964,9 @@ export function buildUsage() {
     '  402bot recipe search "polymarket"',
     '  402bot prompt "find the best live Base treasury monitoring API"',
     '  402bot plan "monitor this wallet for treasury and prediction-market risk"',
+    "  402bot discover ... --json",
+    "  402bot inspect ... --json",
+    "  402bot compare ... --json",
     "",
     "Paid execution:",
     "  402bot mcp --campaign-id defi-agent-alpha",
@@ -922,11 +992,14 @@ export function buildUsage() {
 }
 
 export function buildProxyInvocation(argv, env = process.env) {
-  if (argv.length === 0 || isHelpFlag(argv[0])) {
+  const cliOptions = extractGlobalCliOptions(argv);
+  const effectiveArgv = cliOptions.args;
+
+  if (effectiveArgv.length === 0 || isHelpFlag(effectiveArgv[0])) {
     return { type: "help", text: buildUsage() };
   }
 
-  const [command, ...rest] = argv;
+  const [command, ...rest] = effectiveArgv;
 
   if (command === "setup" || command === "status") {
     return { type: "proxy", proxyArgs: [command, ...rest] };
@@ -941,19 +1014,19 @@ export function buildProxyInvocation(argv, env = process.env) {
   }
 
   if (command === "discover") {
-    return buildDiscoverInvocation(rest, env);
+    return buildDiscoverInvocation(rest, env, cliOptions);
   }
 
   if (command === "inspect") {
-    return buildInspectInvocation(rest, env);
+    return buildInspectInvocation(rest, env, cliOptions);
   }
 
   if (command === "compare") {
-    return buildCompareInvocation(rest, env);
+    return buildCompareInvocation(rest, env, cliOptions);
   }
 
   if (command === "recipe") {
-    return buildRecipeInvocation(rest, env);
+    return buildRecipeInvocation(rest, env, cliOptions);
   }
 
   if (command === "docs") {
@@ -965,15 +1038,15 @@ export function buildProxyInvocation(argv, env = process.env) {
   }
 
   if (command === "init") {
-    return buildInitInvocation(rest, env);
+    return buildInitInvocation(rest, env, cliOptions);
   }
 
   if (command === "prompt") {
-    return buildPromptInvocation(rest, env);
+    return buildPromptInvocation(rest, env, cliOptions);
   }
 
   if (command === "plan") {
-    return buildPlanInvocation(rest, env);
+    return buildPlanInvocation(rest, env, cliOptions);
   }
 
   if (command === "run") {
@@ -1065,6 +1138,10 @@ async function executeHttpInvocation(invocation) {
     jsonBody: invocation.jsonBody,
   });
 
+  if (invocation.jsonOutput) {
+    return stringifyJson(payload);
+  }
+
   return formatInvocationPayload(invocation.format, payload, invocation.meta);
 }
 
@@ -1078,29 +1155,23 @@ async function executeLocalInvocation(invocation) {
   });
 
   if (invocation.action === "prompt_goal") {
-    return formatPromptPlan(invocation.goal, discoverPayload, invocation.baseUrl);
+    const payload = buildPromptPlanPayload(invocation.goal, discoverPayload, invocation.baseUrl);
+    return invocation.jsonOutput ? stringifyJson(payload) : formatPromptPlan(payload);
   }
 
   if (invocation.action === "compare_goal") {
     const endpointIds = discoverPayload.results.slice(0, Math.max(2, invocation.limit)).map((entry) => entry.endpointId);
     if (endpointIds.length < 2) {
-      return [
-        `Goal: ${invocation.goal}`,
-        "",
-        "There are not enough live candidates to run a side-by-side compare yet.",
-        "",
-        formatDiscoverPayload(discoverPayload, { goal: invocation.goal }),
-      ].join("\n");
+      const payload = buildCompareGoalPayload(invocation.goal, discoverPayload, null);
+      return invocation.jsonOutput ? stringifyJson(payload) : formatCompareGoalPayload(payload);
     }
 
     const comparePayload = await requestCompareEndpoints(invocation.baseUrl, {
       endpointIds,
       days: invocation.days,
     });
-    return formatComparePayload(comparePayload, {
-      goal: invocation.goal,
-      discoverPayload,
-    });
+    const payload = buildCompareGoalPayload(invocation.goal, discoverPayload, comparePayload);
+    return invocation.jsonOutput ? stringifyJson(payload) : formatCompareGoalPayload(payload);
   }
 
   if (invocation.action === "plan_goal") {
@@ -1111,7 +1182,8 @@ async function executeLocalInvocation(invocation) {
           days: invocation.days,
         })
       : null;
-    return formatExecutionPlan(invocation.goal, discoverPayload, comparePayload, invocation.baseUrl);
+    const payload = buildExecutionPlanPayload(invocation.goal, discoverPayload, comparePayload, invocation.baseUrl);
+    return invocation.jsonOutput ? stringifyJson(payload) : formatExecutionPlan(payload);
   }
 
   throw new Error(`Unsupported local action: ${invocation.action}`);
@@ -1144,6 +1216,47 @@ function formatInvocationPayload(format, payload, meta = {}) {
     default:
       return JSON.stringify(payload, null, 2);
   }
+}
+
+function buildPromptPlanPayload(goal, discoverPayload, baseUrl) {
+  return {
+    goal,
+    resolvedCapability: discoverPayload.resolvedCapability,
+    sessionId: discoverPayload.sessionId ?? discoverPayload.requestId ?? null,
+    discover: discoverPayload,
+    suggestedCalls: (discoverPayload.suggestedNext ?? []).map((entry) =>
+      buildSuggestedActionPayload(entry, goal, baseUrl)
+    ),
+  };
+}
+
+function buildCompareGoalPayload(goal, discoverPayload, comparePayload) {
+  return {
+    goal,
+    resolvedCapability: discoverPayload.resolvedCapability,
+    selectedEndpointIds: discoverPayload.results.slice(0, DEFAULT_COMPARE_LIMIT).map((entry) => entry.endpointId),
+    discover: discoverPayload,
+    compare: comparePayload,
+    note: comparePayload === null
+      ? "There are not enough live candidates to run a side-by-side compare yet."
+      : null,
+  };
+}
+
+function buildExecutionPlanPayload(goal, discoverPayload, comparePayload, baseUrl) {
+  const recommendation = chooseExecutionRecommendation(goal, discoverPayload, comparePayload);
+  const sourceActions = comparePayload?.suggestedNext?.length
+    ? comparePayload.suggestedNext
+    : discoverPayload.suggestedNext ?? [];
+
+  return {
+    goal,
+    resolvedCapability: discoverPayload.resolvedCapability,
+    discover: discoverPayload,
+    compare: comparePayload,
+    recommendation,
+    nextSteps: sourceActions.map((entry) => buildSuggestedActionPayload(entry, goal, baseUrl)),
+  };
 }
 
 function formatDiscoverPayload(payload, meta = {}) {
@@ -1323,22 +1436,22 @@ function formatRecipeDirectoryPayload(payload, meta = {}) {
   return lines.join("\n");
 }
 
-function formatPromptPlan(goal, discoverPayload, baseUrl) {
+function formatPromptPlan(payload) {
   const lines = [
-    `Goal: ${goal}`,
-    `Resolved capability: ${discoverPayload.resolvedCapability}`,
+    `Goal: ${payload.goal}`,
+    `Resolved capability: ${payload.resolvedCapability}`,
     "",
     "Exact next calls:",
   ];
 
-  if (discoverPayload.suggestedNext?.length === 0) {
+  if (payload.suggestedCalls.length === 0) {
     lines.push("1. Re-run discovery with a broader goal or a less strict budget.");
     return lines.join("\n");
   }
 
-  discoverPayload.suggestedNext.slice(0, 4).forEach((entry, index) => {
+  payload.suggestedCalls.slice(0, 4).forEach((entry, index) => {
     lines.push(`${index + 1}. ${formatActionHeadline(entry)}`);
-    for (const detail of formatSuggestedAction(entry, goal, baseUrl)) {
+    for (const detail of formatSuggestedActionPayload(entry)) {
       lines.push(`   ${detail}`);
     }
   });
@@ -1346,30 +1459,43 @@ function formatPromptPlan(goal, discoverPayload, baseUrl) {
   return lines.join("\n");
 }
 
-function formatExecutionPlan(goal, discoverPayload, comparePayload, baseUrl) {
-  const recommendation = chooseExecutionRecommendation(goal, discoverPayload, comparePayload);
+function formatCompareGoalPayload(payload) {
+  if (payload.compare === null) {
+    return [
+      `Goal: ${payload.goal}`,
+      "",
+      payload.note,
+      "",
+      formatDiscoverPayload(payload.discover, { goal: payload.goal }),
+    ].join("\n");
+  }
+
+  return formatComparePayload(payload.compare, {
+    goal: payload.goal,
+    discoverPayload: payload.discover,
+  });
+}
+
+function formatExecutionPlan(payload) {
   const lines = [
-    `Task: ${goal}`,
-    `Resolved capability: ${discoverPayload.resolvedCapability}`,
-    `Recommended execution surface: ${recommendation.title}`,
-    recommendation.reason,
+    `Task: ${payload.goal}`,
+    `Resolved capability: ${payload.resolvedCapability}`,
+    `Recommended execution surface: ${payload.recommendation.title}`,
+    payload.recommendation.reason,
     "",
-    `Recommended command: ${recommendation.command}`,
+    `Recommended command: ${payload.recommendation.command}`,
   ];
 
-  if (comparePayload?.summary) {
-    lines.push("", `Shortlist summary: ${comparePayload.summary}`);
-  } else if (discoverPayload.results[0]) {
-    lines.push("", `Lead candidate: ${discoverPayload.results[0].endpointId}`);
+  if (payload.compare?.summary) {
+    lines.push("", `Shortlist summary: ${payload.compare.summary}`);
+  } else if (payload.discover.results[0]) {
+    lines.push("", `Lead candidate: ${payload.discover.results[0].endpointId}`);
   }
 
   lines.push("", "Next steps:");
-  const actions = comparePayload?.suggestedNext?.length
-    ? comparePayload.suggestedNext
-    : discoverPayload.suggestedNext ?? [];
-  for (const [index, entry] of actions.slice(0, 4).entries()) {
+  for (const [index, entry] of payload.nextSteps.slice(0, 4).entries()) {
     lines.push(`${index + 1}. ${formatActionHeadline(entry)}`);
-    for (const detail of formatSuggestedAction(entry, goal, baseUrl)) {
+    for (const detail of formatSuggestedActionPayload(entry)) {
       lines.push(`   ${detail}`);
     }
   }
@@ -1435,42 +1561,80 @@ function chooseExecutionRecommendation(goal, discoverPayload, comparePayload) {
 }
 
 function formatSuggestedAction(entry, goal, baseUrl = DEFAULT_API_BASE_URL) {
-  const details = [
-    `Reason: ${entry.reason}`,
-    `MCP: ${entry.tool} ${JSON.stringify(entry.args ?? {})}`,
-  ];
+  return formatSuggestedActionPayload(buildSuggestedActionPayload(entry, goal, baseUrl));
+}
+
+function buildSuggestedActionPayload(entry, goal, baseUrl = DEFAULT_API_BASE_URL) {
+  const payload = {
+    tool: entry.tool,
+    reason: entry.reason,
+    args: entry.args ?? {},
+    mcpCall: {
+      tool: entry.tool,
+      args: entry.args ?? {},
+    },
+  };
 
   switch (entry.tool) {
     case "inspect_endpoint":
       if (entry.args?.endpointId) {
-        details.push(`CLI: 402bot inspect ${entry.args.endpointId}`);
+        payload.cliCommand = `402bot inspect ${entry.args.endpointId}`;
       }
       break;
     case "inspect_agent":
       if (entry.args?.address) {
-        details.push(`CLI: 402bot inspect ${entry.args.address}`);
+        payload.cliCommand = `402bot inspect ${entry.args.address}`;
       }
       break;
     case "buy_best_route":
-      details.push(`CLI: 402bot route --body ${quoteShellValue(JSON.stringify(entry.args ?? {}))}`);
-      details.push(`HTTP: POST ${baseUrl}/v1/route ${JSON.stringify(entry.args ?? {})}`);
+      payload.cliCommand = `402bot route --body ${quoteShellValue(JSON.stringify(entry.args ?? {}))}`;
+      payload.httpRequest = {
+        method: "POST",
+        url: `${baseUrl}/v1/route`,
+        body: entry.args ?? {},
+      };
       break;
     case "compare_endpoints":
       if (goal) {
-        details.push(`CLI: 402bot compare ${quoteShellValue(goal)}`);
+        payload.cliCommand = `402bot compare ${quoteShellValue(goal)}`;
       }
-      details.push(`HTTP: POST ${baseUrl}/v1/discover/compare ${JSON.stringify(entry.args ?? {})}`);
+      payload.httpRequest = {
+        method: "POST",
+        url: `${baseUrl}/v1/discover/compare`,
+        body: entry.args ?? {},
+      };
       break;
     case "continue_discovery_session":
-      details.push(`HTTP: POST ${baseUrl}/v1/discover/continue ${JSON.stringify(entry.args ?? {})}`);
+      payload.httpRequest = {
+        method: "POST",
+        url: `${baseUrl}/v1/discover/continue`,
+        body: entry.args ?? {},
+      };
       break;
     case "review_endpoint_readiness":
       if (entry.args?.endpointId) {
-        details.push(`CLI fallback: 402bot inspect ${entry.args.endpointId}`);
+        payload.cliCommand = `402bot inspect ${entry.args.endpointId}`;
       }
       break;
     default:
       break;
+  }
+
+  return payload;
+}
+
+function formatSuggestedActionPayload(payload) {
+  const details = [
+    `Reason: ${payload.reason}`,
+    `MCP: ${payload.mcpCall.tool} ${JSON.stringify(payload.mcpCall.args)}`,
+  ];
+
+  if (payload.cliCommand) {
+    details.push(`CLI: ${payload.cliCommand}`);
+  }
+
+  if (payload.httpRequest) {
+    details.push(`HTTP: ${payload.httpRequest.method} ${payload.httpRequest.url} ${JSON.stringify(payload.httpRequest.body)}`);
   }
 
   return details;
@@ -1781,6 +1945,10 @@ function formatDate(value) {
   return date.toISOString();
 }
 
+function stringifyJson(payload) {
+  return JSON.stringify(payload, null, 2);
+}
+
 export async function main(argv = process.argv.slice(2), env = process.env) {
   const invocation = buildProxyInvocation(argv, env);
 
@@ -1795,7 +1963,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   }
 
   if (invocation.type === "print") {
-    process.stdout.write(`${invocation.text}\n`);
+    process.stdout.write(`${invocation.jsonOutput ? stringifyJson(invocation.data ?? invocation.text) : invocation.text}\n`);
     return 0;
   }
 
@@ -1841,9 +2009,20 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   });
 }
 
-const isEntrypoint = process.argv[1] === fileURLToPath(import.meta.url);
+export function isEntrypoint(argv = process.argv) {
+  const candidatePath = argv[1];
+  if (!candidatePath) {
+    return false;
+  }
 
-if (isEntrypoint) {
+  try {
+    return realpathSync(candidatePath) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (isEntrypoint()) {
   main().then((code) => {
     process.exit(code);
   }).catch((error) => {

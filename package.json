@@ -1,6 +1,6 @@
 {
   "name": "402bot",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "402.bot CLI powered by x402-proxy",
   "type": "module",
   "bin": {

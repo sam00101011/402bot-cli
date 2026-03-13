@@ -1,14 +1,8 @@
-# 402bot CLI
+# 402bot
 
-Public npm package and release repo for the `402bot` CLI.
+`402bot` is a product CLI for `402.bot`, backed by [`x402-proxy`](https://github.com/cascade-protocol/x402-proxy).
 
-`402bot` is a product wrapper around [`x402-proxy`](https://github.com/cascade-protocol/x402-proxy). It keeps wallet setup, x402 payment handling, MCP proxying, and spend history from `x402-proxy`, while adding higher-level discovery, inspection, planning, recipe, docs, wallet, and market-oriented commands for agent builders and DeFi operators.
-
-## Install
-
-```bash
-npx 402bot
-```
+It keeps wallet setup, x402 payment handling, MCP proxying, and spend history from `x402-proxy`, but adds higher-level commands for discovery, inspection, recipes, docs crawls, wallet dossiers, market workflows, and agent setup.
 
 ## Discovery And Agent Operations
 
@@ -54,28 +48,9 @@ npx 402bot
 402bot fetch-transform --body '{"sourceId":"cloudflare_crawl","params":{"url":"https://docs.uniswap.org"}}'
 ```
 
-## Public 402.bot surfaces
+## Notes
 
-- MCP runtime: `https://api.402.bot/mcp`
-- MCP setup page: `https://api.402.bot/mcp/setup`
-- HTTP API base: `https://api.402.bot`
-- Homepage: `https://402.bot`
-
-## Publish
-
-This repo publishes the npm package `402bot`.
-
-- GitHub Actions workflow: `.github/workflows/publish.yml`
-- npm secret required: `NPM_TOKEN`
-- tag format: `v<package-version>`
-
-Example:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-## Repo Scope
-
-This repo is the public home for the CLI package only. The full `402.bot` product/runtime remains private.
+- `mcp` routes to `https://api.402.bot/mcp`
+- read-only discovery and analytics commands hit the public `402.bot` HTTP APIs directly
+- paid execution commands still settle through `x402-proxy`
+- `BOT402_API_URL` and `BOT402_MCP_URL` can override the defaults
