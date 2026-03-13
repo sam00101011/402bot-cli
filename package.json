@@ -1,13 +1,14 @@
 {
   "name": "402bot",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "402.bot CLI powered by x402-proxy",
   "type": "module",
   "bin": {
-  "402bot": "./index.js"
-},
+    "402bot": "./index.js"
+  },
   "files": [
     "index.js",
+    "runtime.js",
     "README.md"
   ],
   "scripts": {
@@ -34,7 +35,14 @@
   },
   "license": "UNLICENSED",
   "dependencies": {
-    "x402-proxy": "^0.3.2"
+    "@noble/curves": "^2.0.1",
+    "@noble/hashes": "^2.0.1",
+    "@scure/base": "^2.0.0",
+    "@scure/bip32": "^2.0.1",
+    "@scure/bip39": "^2.0.1",
+    "viem": "^2.47.0",
+    "x402-proxy": "^0.4.1",
+    "yaml": "^2.8.2"
   },
   "engines": {
     "node": ">=22.0.0"

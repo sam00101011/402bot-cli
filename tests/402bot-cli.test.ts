@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   buildProxyInvocation,
@@ -24,9 +25,10 @@ describe("402bot CLI wrapper", () => {
   test("treats a symlinked global bin as the entrypoint", () => {
     const tempDir = mkdtempSync(join(tmpdir(), "402bot-entrypoint-"));
     const symlinkPath = join(tempDir, "402bot");
+    const entrypointPath = fileURLToPath(new URL("../index.js", import.meta.url));
 
     try {
-      symlinkSync(join(process.cwd(), "index.js"), symlinkPath);
+      symlinkSync(entrypointPath, symlinkPath);
       expect(isEntrypoint(["node", symlinkPath])).toBe(true);
     } finally {
       rmSync(tempDir, { force: true, recursive: true });
@@ -40,10 +42,8 @@ describe("402bot CLI wrapper", () => {
     });
   });
 
-  test("maps wallet dossier to the wallet-intel recipe wrapper", () => {
-    expect(
-      buildProxyInvocation(["wallet", "dossier", "0xabc"]),
-    ).toEqual({
+  test("maps wallet dossier profiles to recipe wrappers", () => {
+    expect(buildProxyInvocation(["wallet", "dossier", "0xabc"])).toEqual({
       type: "proxy",
       proxyArgs: [
         "--method",
@@ -55,11 +55,50 @@ describe("402bot CLI wrapper", () => {
         `${DEFAULT_API_BASE_URL}/v1/recipes/wallet-intel-brief/run`,
       ],
     });
-  });
 
-  test("supports the polymarket wallet dossier profile", () => {
+    expect(buildProxyInvocation(["wallet", "dossier", "0xabc", "--profile", "treasury"])).toEqual({
+      type: "proxy",
+      proxyArgs: [
+        "--method",
+        "POST",
+        "--header",
+        "Content-Type: application/json",
+        "--body",
+        '{"input":{"walletAddress":"0xabc"}}',
+        `${DEFAULT_API_BASE_URL}/v1/recipes/treasury-risk-watch/run`,
+      ],
+    });
+
+    expect(buildProxyInvocation(["wallet", "dossier", "0xabc", "--profile", "defi-risk"])).toEqual({
+      type: "proxy",
+      proxyArgs: [
+        "--method",
+        "POST",
+        "--header",
+        "Content-Type: application/json",
+        "--body",
+        '{"input":{"walletAddress":"0xabc"}}',
+        `${DEFAULT_API_BASE_URL}/v1/recipes/wallet-stablecoin-liquidity-brief/run`,
+      ],
+    });
+
     expect(
-      buildProxyInvocation(["wallet", "dossier", "0xabc", "--profile", "polymarket", "--days", "14"]),
+      buildProxyInvocation(["wallet", "dossier", "0xabc", "--profile", "counterparty-map", "--days", "1"]),
+    ).toEqual({
+      type: "proxy",
+      proxyArgs: [
+        "--method",
+        "POST",
+        "--header",
+        "Content-Type: application/json",
+        "--body",
+        '{"input":{"walletAddress":"0xabc","window":"24h"}}',
+        `${DEFAULT_API_BASE_URL}/v1/recipes/wallet-counterparty-map/run`,
+      ],
+    });
+
+    expect(
+      buildProxyInvocation(["wallet", "dossier", "0xabc", "--profile", "prediction-markets", "--days", "14"]),
     ).toEqual({
       type: "proxy",
       proxyArgs: [
@@ -89,9 +128,7 @@ describe("402bot CLI wrapper", () => {
   });
 
   test("maps route to the paid route API", () => {
-    expect(
-      buildProxyInvocation(["route", "--body", '{"goal":"weather"}']),
-    ).toEqual({
+    expect(buildProxyInvocation(["route", "--body", '{"goal":"weather"}'])).toEqual({
       type: "proxy",
       proxyArgs: [
         "--method",
@@ -128,24 +165,48 @@ describe("402bot CLI wrapper", () => {
     });
   });
 
-  test("builds discover goal requests over the public HTTP API", () => {
+  test("builds discover as a filtered local action", () => {
     expect(
-      buildProxyInvocation(["discover", "find", "the", "best", "wallet", "risk", "API", "--limit", "7", "--budget", "0.02"]),
+      buildProxyInvocation([
+        "discover",
+        "find",
+        "the",
+        "best",
+        "wallet",
+        "risk",
+        "API",
+        "--limit",
+        "7",
+        "--budget",
+        "0.02",
+        "--max-price",
+        "0.01",
+        "--freshness",
+        "6h",
+        "--trust",
+        "observed",
+        "--requires-mcp",
+        "--asset",
+        "USDC",
+      ]),
     ).toEqual({
-      type: "http",
-      method: "POST",
-      format: "discover",
-      meta: {
-        goal: "find the best wallet risk API",
+      type: "local",
+      action: "discover_goal",
+      baseUrl: DEFAULT_API_BASE_URL,
+      goal: "find the best wallet risk API",
+      network: DEFAULT_NETWORK,
+      useConfiguredNetworkDefault: true,
+      strategy: "balanced",
+      limit: 7,
+      budgetUsdc: 0.02,
+      filters: {
+        maxPriceUsdc: 0.01,
+        freshness: "6h",
+        trust: "observed",
+        provider: undefined,
+        requiresMcp: true,
+        asset: "USDC",
       },
-      jsonBody: {
-        goal: "find the best wallet risk API",
-        network: DEFAULT_NETWORK,
-        strategy: "balanced",
-        limit: 7,
-        budgetUsdc: 0.02,
-      },
-      url: `${DEFAULT_API_BASE_URL}/v1/discover/goal`,
     });
   });
 
@@ -153,51 +214,45 @@ describe("402bot CLI wrapper", () => {
     expect(
       buildProxyInvocation(["--json", "discover", "find", "the", "best", "wallet", "risk", "API"]),
     ).toEqual({
-      type: "http",
-      method: "POST",
-      format: "discover",
+      type: "local",
+      action: "discover_goal",
       jsonOutput: true,
-      meta: {
-        goal: "find the best wallet risk API",
+      baseUrl: DEFAULT_API_BASE_URL,
+      goal: "find the best wallet risk API",
+      network: DEFAULT_NETWORK,
+      useConfiguredNetworkDefault: true,
+      strategy: "balanced",
+      limit: 5,
+      budgetUsdc: undefined,
+      filters: {
+        maxPriceUsdc: undefined,
+        freshness: undefined,
+        trust: undefined,
+        provider: undefined,
+        requiresMcp: undefined,
+        asset: undefined,
       },
-      jsonBody: {
-        goal: "find the best wallet risk API",
-        network: DEFAULT_NETWORK,
-        strategy: "balanced",
-        limit: 5,
-      },
-      url: `${DEFAULT_API_BASE_URL}/v1/discover/goal`,
     });
 
-    expect(
-      buildProxyInvocation(["inspect", "weather-alpha", "--json"]),
-    ).toEqual({
-      type: "http",
-      method: "GET",
-      format: "inspect_endpoint",
+    expect(buildProxyInvocation(["inspect", "weather-alpha", "--json"])).toEqual({
+      type: "local",
+      action: "inspect_endpoint",
       jsonOutput: true,
-      meta: {
-        target: "weather-alpha",
-      },
-      url: `${DEFAULT_API_BASE_URL}/analytics/endpoint/weather-alpha?days=30`,
+      baseUrl: DEFAULT_API_BASE_URL,
+      endpointId: "weather-alpha",
+      days: 30,
     });
   });
 
-  test("builds endpoint inspection requests", () => {
-    expect(
-      buildProxyInvocation(["inspect", "weather-alpha", "--days", "14"]),
-    ).toEqual({
-      type: "http",
-      method: "GET",
-      format: "inspect_endpoint",
-      meta: {
-        target: "weather-alpha",
-      },
-      url: `${DEFAULT_API_BASE_URL}/analytics/endpoint/weather-alpha?days=14`,
+  test("builds endpoint and agent inspection requests as local actions", () => {
+    expect(buildProxyInvocation(["inspect", "weather-alpha", "--days", "14"])).toEqual({
+      type: "local",
+      action: "inspect_endpoint",
+      baseUrl: DEFAULT_API_BASE_URL,
+      endpointId: "weather-alpha",
+      days: 14,
     });
-  });
 
-  test("builds agent inspection requests for wallet addresses", () => {
     expect(
       buildProxyInvocation([
         "inspect",
@@ -208,55 +263,50 @@ describe("402bot CLI wrapper", () => {
         "eip155:8453",
       ]),
     ).toEqual({
-      type: "http",
-      method: "GET",
-      format: "inspect_agent",
-      meta: {
-        target: "0x1111111111111111111111111111111111111111",
-      },
-      url:
-        `${DEFAULT_API_BASE_URL}/analytics/agent/0x1111111111111111111111111111111111111111?days=7&network=eip155%3A8453`,
+      type: "local",
+      action: "inspect_agent",
+      baseUrl: DEFAULT_API_BASE_URL,
+      address: "0x1111111111111111111111111111111111111111",
+      days: 7,
+      network: "eip155:8453",
+      useConfiguredNetworkDefault: false,
     });
   });
 
-  test("builds compare goal plans as a local action", () => {
-    expect(
-      buildProxyInvocation(["compare", "wallet", "intelligence", "--days", "21"]),
-    ).toEqual({
+  test("builds compare, prompt, and plan as local actions", () => {
+    expect(buildProxyInvocation(["compare", "wallet", "intelligence", "--days", "21"])).toEqual({
       type: "local",
       action: "compare_goal",
       baseUrl: DEFAULT_API_BASE_URL,
       goal: "wallet intelligence",
       network: DEFAULT_NETWORK,
+      useConfiguredNetworkDefault: true,
       strategy: "balanced",
       limit: 3,
       budgetUsdc: undefined,
       days: 21,
     });
-  });
 
-  test("builds prompt and plan as local actions", () => {
-    expect(
-      buildProxyInvocation(["prompt", "find", "a", "wallet", "risk", "API"]),
-    ).toEqual({
+    expect(buildProxyInvocation(["prompt", "find", "a", "wallet", "risk", "API"])).toEqual({
       type: "local",
       action: "prompt_goal",
       baseUrl: DEFAULT_API_BASE_URL,
       goal: "find a wallet risk API",
       network: DEFAULT_NETWORK,
+      useConfiguredNetworkDefault: true,
       strategy: "balanced",
       limit: 5,
       budgetUsdc: undefined,
     });
 
-    expect(
-      buildProxyInvocation(["plan", "monitor", "this", "wallet", "for", "treasury", "risk"]),
-    ).toEqual({
+    expect(buildProxyInvocation(["plan", "monitor", "this", "wallet", "for", "treasury", "risk", "--json"])).toEqual({
       type: "local",
       action: "plan_goal",
+      jsonOutput: true,
       baseUrl: DEFAULT_API_BASE_URL,
       goal: "monitor this wallet for treasury risk",
       network: DEFAULT_NETWORK,
+      useConfiguredNetworkDefault: true,
       strategy: "balanced",
       limit: 3,
       budgetUsdc: undefined,
@@ -265,53 +315,17 @@ describe("402bot CLI wrapper", () => {
   });
 
   test("lists and searches recipes over the public recipe directory", () => {
-    expect(
-      buildProxyInvocation(["recipe", "list", "--cluster", "Wallet Intelligence", "--limit", "20"]),
-    ).toEqual({
+    expect(buildProxyInvocation(["recipe", "list", "--cluster", "Wallet Intelligence", "--limit", "20"])).toEqual({
       type: "http",
       method: "GET",
       format: "recipes",
       meta: {
         mode: "list",
       },
-      url:
-        `${DEFAULT_API_BASE_URL}/v1/recipes?limit=20&cluster=Wallet+Intelligence&sort=quality`,
+      url: `${DEFAULT_API_BASE_URL}/v1/recipes?limit=20&cluster=Wallet+Intelligence&sort=quality`,
     });
 
-    expect(
-      buildProxyInvocation(["recipe", "search", "polymarket", "--max-price", "0.02"]),
-    ).toEqual({
-      type: "http",
-      method: "GET",
-      format: "recipes",
-      meta: {
-        mode: "search",
-        query: "polymarket",
-      },
-      url:
-        `${DEFAULT_API_BASE_URL}/v1/recipes/search?q=polymarket&limit=12&sort=quality&maxPriceUsdc=0.02`,
-    });
-  });
-
-  test("supports --json on local plan and recipe search commands", () => {
-    expect(
-      buildProxyInvocation(["plan", "monitor", "this", "wallet", "for", "treasury", "risk", "--json"]),
-    ).toEqual({
-      type: "local",
-      action: "plan_goal",
-      jsonOutput: true,
-      baseUrl: DEFAULT_API_BASE_URL,
-      goal: "monitor this wallet for treasury risk",
-      network: DEFAULT_NETWORK,
-      strategy: "balanced",
-      limit: 3,
-      budgetUsdc: undefined,
-      days: 30,
-    });
-
-    expect(
-      buildProxyInvocation(["recipe", "search", "polymarket", "--max-price", "0.02", "--json"]),
-    ).toEqual({
+    expect(buildProxyInvocation(["recipe", "search", "polymarket", "--max-price", "0.02", "--json"])).toEqual({
       type: "http",
       method: "GET",
       format: "recipes",
@@ -320,8 +334,7 @@ describe("402bot CLI wrapper", () => {
         mode: "search",
         query: "polymarket",
       },
-      url:
-        `${DEFAULT_API_BASE_URL}/v1/recipes/search?q=polymarket&limit=12&sort=quality&maxPriceUsdc=0.02`,
+      url: `${DEFAULT_API_BASE_URL}/v1/recipes/search?q=polymarket&limit=12&sort=quality&maxPriceUsdc=0.02`,
     });
   });
 
@@ -342,9 +355,34 @@ describe("402bot CLI wrapper", () => {
     });
   });
 
-  test("wraps docs crawl as a cloudflare_crawl fetch-transform", () => {
+  test("wraps docs crawl with scoped crawl defaults", () => {
+    expect(buildProxyInvocation(["docs", "crawl", "https://docs.uniswap.org"])).toEqual({
+      type: "proxy",
+      proxyArgs: [
+        "--method",
+        "POST",
+        "--header",
+        "Content-Type: application/json",
+        "--body",
+        '{"sourceId":"cloudflare_crawl","deliveryFormat":"json","params":{"url":"https://docs.uniswap.org","pageFormat":"markdown","depth":1,"limit":6,"includeExternalLinks":false,"includeSubdomains":false}}',
+        `${DEFAULT_API_BASE_URL}/v1/alchemist/fetch-transform`,
+      ],
+    });
+
     expect(
-      buildProxyInvocation(["docs", "crawl", "https://docs.uniswap.org"]),
+      buildProxyInvocation([
+        "docs",
+        "crawl",
+        "https://docs.uniswap.org",
+        "--profile",
+        "integration-notes",
+        "--scope",
+        "subdomains",
+        "--depth",
+        "4",
+        "--limit",
+        "25",
+      ]),
     ).toEqual({
       type: "proxy",
       proxyArgs: [
@@ -353,63 +391,103 @@ describe("402bot CLI wrapper", () => {
         "--header",
         "Content-Type: application/json",
         "--body",
-        '{"sourceId":"cloudflare_crawl","params":{"url":"https://docs.uniswap.org"}}',
+        '{"sourceId":"cloudflare_crawl","deliveryFormat":"json","params":{"url":"https://docs.uniswap.org","pageFormat":"markdown","depth":4,"limit":25,"includeExternalLinks":false,"includeSubdomains":true}}',
         `${DEFAULT_API_BASE_URL}/v1/alchemist/fetch-transform`,
       ],
     });
   });
 
-  test("wraps polymarket trading into the paid order API", () => {
+  test("wraps polymarket trading into a local resolution action", () => {
     expect(
-      buildProxyInvocation(["trade", "polymarket", "12345", "--side", "buy", "--size", "5", "--kind", "limit", "--price", "0.42"]),
+      buildProxyInvocation([
+        "trade",
+        "polymarket",
+        "12345",
+        "--side",
+        "buy",
+        "--size",
+        "5",
+        "--kind",
+        "limit",
+        "--price",
+        "0.42",
+      ]),
     ).toEqual({
-      type: "proxy",
-      proxyArgs: [
-        "--method",
-        "POST",
-        "--header",
-        "Content-Type: application/json",
-        "--body",
-        '{"tokenId":"12345","side":"BUY","orderKind":"limit","price":0.42,"size":5}',
-        `${DEFAULT_API_BASE_URL}/v1/predictions/polymarket/orders`,
-      ],
+      type: "local",
+      action: "trade_polymarket",
+      baseUrl: DEFAULT_API_BASE_URL,
+      marketRef: "12345",
+      outcome: undefined,
+      side: "BUY",
+      orderKind: "limit",
+      price: 0.42,
+      size: 5,
+      amount: undefined,
+      timeInForce: undefined,
+      postOnly: false,
     });
   });
 
-  test("prints init agent snippets for Codex", () => {
-    const invocation = buildProxyInvocation(["init", "agent", "codex", "--campaign-id", "codex-mcp-setup"]);
-    expect(invocation.type).toBe("print");
-    if (invocation.type === "print") {
-      expect(invocation.text).toContain("BOT402_CAMPAIGN_ID=codex-mcp-setup");
-      expect(invocation.text).toContain("codex mcp add 402bot --url https://api.402.bot/mcp?campaignId=codex-mcp-setup");
-      expect(invocation.text).toContain("[mcp_servers.402bot]");
-    }
-  });
+  test("builds config, doctor, spend, history, and completion commands", () => {
+    expect(buildProxyInvocation(["config", "get"])).toEqual({
+      type: "local",
+      action: "config_get",
+      key: null,
+    });
 
-  test("supports --json on init agent output", () => {
-    const invocation = buildProxyInvocation(["init", "agent", "codex", "--campaign-id", "codex-mcp-setup", "--json"]);
-    expect(invocation.type).toBe("print");
-    if (invocation.type === "print") {
-      expect(invocation.jsonOutput).toBe(true);
-      expect(invocation.data).toMatchObject({
-        campaignId: "codex-mcp-setup",
-        remoteMcpUrl: "https://api.402.bot/mcp?campaignId=codex-mcp-setup",
-        envDefaults: {
-          BOT402_CAMPAIGN_ID: "codex-mcp-setup",
-        },
-        clients: [
-          {
-            id: "codex",
-          },
-        ],
+    expect(buildProxyInvocation(["config", "set", "campaign-id", "codex-mcp-setup", "--json"])).toEqual({
+      type: "local",
+      action: "config_set",
+      jsonOutput: true,
+      key: "campaignId",
+      value: "codex-mcp-setup",
+    });
+
+    expect(buildProxyInvocation(["doctor", "--json"])).toEqual({
+      type: "local",
+      action: "doctor",
+      jsonOutput: true,
+    });
+
+    expect(buildProxyInvocation(["spend", "--since", "7d"])).toEqual({
+      type: "local",
+      action: "spend",
+      since: "7d",
+    });
+
+    expect(buildProxyInvocation(["history", "--since", "7d", "--limit", "50", "--json"])).toEqual({
+      type: "local",
+      action: "history",
+      jsonOutput: true,
+      since: "7d",
+      limit: 50,
+    });
+
+    const completion = buildProxyInvocation(["completion", "zsh", "--json"]);
+    expect(completion.type).toBe("print");
+    if (completion.type === "print") {
+      expect(completion.jsonOutput).toBe(true);
+      expect(completion.data).toMatchObject({
+        schema: "402bot/completion/v1",
+        shell: "zsh",
       });
     }
   });
 
+  test("builds init agent as a local action", () => {
+    expect(buildProxyInvocation(["init", "agent", "codex", "--campaign-id", "codex-mcp-setup", "--json"])).toEqual({
+      type: "local",
+      action: "init_agent",
+      jsonOutput: true,
+      client: "codex",
+      campaignId: "codex-mcp-setup",
+      baseUrl: DEFAULT_API_BASE_URL,
+      remoteMcpBaseUrl: DEFAULT_MCP_URL,
+    });
+  });
+
   test("maps named workflows to recipe runs", () => {
-    expect(
-      buildProxyInvocation(["run", "wallet-research", "0xabc"]),
-    ).toEqual({
+    expect(buildProxyInvocation(["run", "wallet-research", "0xabc"])).toEqual({
       type: "proxy",
       proxyArgs: [
         "--method",
@@ -443,9 +521,7 @@ describe("402bot CLI wrapper", () => {
       ],
     });
 
-    expect(
-      buildProxyInvocation(["run", "market-briefing", "Polymarket", "election", "odds", "--min-likes", "5"]),
-    ).toEqual({
+    expect(buildProxyInvocation(["run", "market-briefing", "Polymarket", "election", "odds", "--min-likes", "5"])).toEqual({
       type: "proxy",
       proxyArgs: [
         "--method",
@@ -480,14 +556,24 @@ describe("402bot CLI wrapper", () => {
       type: "error",
       message: "trade polymarket requires --side buy|sell.",
     });
+
+    expect(buildProxyInvocation(["config", "set", "unknown", "value"])).toEqual({
+      type: "error",
+      message: "Unknown config key: unknown",
+    });
   });
 
-  test("usage documents the new agent and DeFi flows", () => {
+  test("usage documents the new operator and agent flows", () => {
     const usage = buildUsage();
+    expect(usage).toContain("402bot config get");
+    expect(usage).toContain("402bot doctor");
+    expect(usage).toContain("402bot spend --since 7d");
+    expect(usage).toContain("402bot completion zsh");
     expect(usage).toContain("402bot discover");
     expect(usage).toContain("402bot inspect <endpoint-id-or-agent-address>");
-    expect(usage).toContain("402bot wallet dossier <address>");
-    expect(usage).toContain("402bot trade polymarket 12345 --side buy --size 5");
+    expect(usage).toContain("402bot wallet dossier <address> --profile treasury");
+    expect(usage).toContain("402bot docs crawl https://docs.uniswap.org --profile integration-notes --scope subdomains --depth 2");
+    expect(usage).toContain("402bot trade polymarket https://polymarket.com/event/example --outcome yes --side buy --size 5");
     expect(usage).toContain("402bot init agent codex --campaign-id codex-mcp-setup");
   });
 });

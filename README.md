@@ -2,18 +2,31 @@
 
 `402bot` is a product CLI for `402.bot`, backed by [`x402-proxy`](https://github.com/cascade-protocol/x402-proxy).
 
-It keeps wallet setup, x402 payment handling, MCP proxying, and spend history from `x402-proxy`, but adds higher-level commands for discovery, inspection, recipes, docs crawls, wallet dossiers, market workflows, and agent setup.
+It keeps wallet setup, x402 payment handling, MCP proxying, and spend history from `x402-proxy`, but adds higher-level commands for discovery, inspection, config defaults, docs crawls, wallet dossiers, market workflows, and agent setup.
 
-## Discovery And Agent Operations
+## Setup, Config, And History
 
 ```bash
 402bot setup
 402bot status
+402bot doctor
 402bot wallet
+402bot config get
+402bot config set campaign-id codex-mcp-setup
+402bot config set spend-cap 2
+402bot spend --since 7d
+402bot history --since 7d --json
+402bot completion zsh
+```
+
+## Discovery And Agent Operations
+
+```bash
 
 402bot mcp --campaign-id defi-agent-alpha
 
 402bot discover "find the best live Base wallet-intelligence or risk API for an autonomous trading agent"
+402bot discover "best Base treasury API" --max-price 0.02 --freshness 6h --trust observed --requires-mcp
 402bot inspect weather-alpha
 402bot inspect 0x1111111111111111111111111111111111111111
 402bot compare "find the best live Base treasury monitoring API"
@@ -32,12 +45,16 @@ It keeps wallet setup, x402 payment handling, MCP proxying, and spend history fr
 
 ```bash
 402bot wallet dossier 0x1111111111111111111111111111111111111111
-402bot wallet dossier 0x1111111111111111111111111111111111111111 --profile polymarket --days 14
+402bot wallet dossier 0x1111111111111111111111111111111111111111 --profile treasury
+402bot wallet dossier 0x1111111111111111111111111111111111111111 --profile defi-risk
+402bot wallet dossier 0x1111111111111111111111111111111111111111 --profile counterparty-map --days 1
+402bot wallet dossier 0x1111111111111111111111111111111111111111 --profile prediction-markets --days 14
 
 402bot docs crawl https://docs.uniswap.org
+402bot docs crawl https://docs.uniswap.org --profile integration-notes --scope subdomains --depth 2
 
-402bot trade polymarket 12345 --side buy --size 5
-402bot trade polymarket 12345 --side sell --amount 10 --kind market
+402bot trade polymarket https://polymarket.com/event/example --outcome yes --side buy --size 5
+402bot trade polymarket us-recession-in-2026 --outcome no --side sell --amount 10 --kind market
 
 402bot run wallet-research 0x1111111111111111111111111111111111111111
 402bot run protocol-diligence https://docs.uniswap.org --question "What are the obvious diligence gaps?"
@@ -51,6 +68,8 @@ It keeps wallet setup, x402 payment handling, MCP proxying, and spend history fr
 ## Notes
 
 - `mcp` routes to `https://api.402.bot/mcp`
+- `config` persists `campaignId`, preferred network, spend caps, favorite wallet, and favorite recipe under `~/.config/402bot`
 - read-only discovery and analytics commands hit the public `402.bot` HTTP APIs directly
+- `discover`, `inspect`, `compare`, `doctor`, `spend`, `history`, and `completion` support stable `--json` output
 - paid execution commands still settle through `x402-proxy`
 - `BOT402_API_URL` and `BOT402_MCP_URL` can override the defaults
