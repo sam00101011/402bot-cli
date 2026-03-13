@@ -117,8 +117,8 @@ describe("402bot CLI wrapper", () => {
 
   test("usage documents the main 402bot flows", () => {
     const usage = buildUsage();
-    expect(usage).toContain("402bot mcp");
-    expect(usage).toContain("402bot route --body");
-    expect(usage).toContain("402bot recipe run <slug>");
+    expect(usage).toContain("402bot mcp --campaign-id defi-agent-alpha");
+    expect(usage).toContain("wallet-intelligence or risk API");
+    expect(usage).toContain("402bot recipe run wallet-intel-brief");
   });
 });

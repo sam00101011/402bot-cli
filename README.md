@@ -10,25 +10,24 @@ Public npm package and release repo for the `402bot` CLI.
 npx 402bot
 ```
 
-## Commands
+## Agent And DeFi Examples
 
 ```bash
 402bot setup
 402bot status
 402bot wallet
 
-402bot mcp
-402bot mcp --campaign-id codex-mcp-setup
+402bot mcp --campaign-id defi-agent-alpha
 
-402bot route --body '{"goal":"find a weather api on Base"}'
+402bot route --body '{"goal":"find the best live Base wallet-intelligence or risk API for an autonomous trading agent"}'
 402bot materialize --body '{"templateId":"wallet_portfolio","parameters":{"wallet":"0x..."}}'
-402bot fetch-transform --body '{"sourceId":"openweather_current","params":{"city":"Tokyo"}}'
+402bot fetch-transform --body '{"sourceId":"cloudflare_crawl","params":{"url":"https://docs.uniswap.org"}}'
 
 402bot recipes
-402bot recipe run wallet-intel-brief --body '{}'
+402bot recipe run wallet-intel-brief --body '{"wallet":"0x..."}'
 
 402bot polymarket performance 0x1234...
-402bot polymarket order --body '{"market":"..."}'
+402bot polymarket order --body '{"market":"...","side":"buy"}'
 ```
 
 ## Public 402.bot surfaces
