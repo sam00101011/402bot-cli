@@ -1,0 +1,1392 @@
+# 402.bot Discovery Oracle Full Index
+
+> Expanded machine-readable index generated from the execution manifest, public fetch-source catalog, and provider directory.
+
+- wallet_dossier is the recommended first MCP call for a compact token-saving wallet artifact, while quickstart_for_goal stays available for discovery-first activation.
+
+## Canonical links
+- Homepage: https://402.bot
+- Homepage summary (markdown): https://402.bot/home.md
+- Remote MCP server: https://api.402.bot/mcp
+- Local stdio bridge: npx @402bot/mcp --url https://api.402.bot/mcp
+- MCP setup guide: https://api.402.bot/mcp/setup
+- MCP setup guide (markdown): https://api.402.bot/mcp/setup.md
+- llms.txt: https://402.bot/llms.txt
+- llms-full.txt: https://402.bot/llms-full.txt
+- Recipe directory (markdown): https://402.bot/recipes.md
+- Provider directory (markdown): https://402.bot/providers.md
+- Marketplace register guide: https://402.bot/register.md
+- Marketplace submit page: https://marketplace.402.bot/agents/submit
+- Marketplace submission API: https://api.402.bot/v1/marketplace/submissions
+- Directory kit JSON: https://api.402.bot/directory-kit.json
+- Execution manifest: https://api.402.bot/execution-manifest.json
+- Fetch source catalog: https://api.402.bot/v1/alchemist/fetch-sources
+- Provider submission contract: https://api.402.bot/v1/provider-submissions
+- Provider directory: https://api.402.bot/v1/providers
+- Recipe directory: https://api.402.bot/v1/recipes
+- First prompt: Use wallet_dossier for wallet 0xff443725bcFa9e85e7da20b59D26E39B1eFa26B4 on Base and return one compact wallet brief with balances, counterparties, recent signals, and next actions. Prefer this token-saving path over raw balances plus transfers plus manual summarization.
+- Expected first result: You should get a compact wallet dossier run with an inspection URL, the next exact MCP call, and a token-saving path that avoids raw balances plus transfers plus manual summarization.
+- The recipe catalog includes Bankr-backed operator workflows; direct Bankr fetch-transform sources remain internal and are not listed in the public fetch-source catalog.
+- Recipes are the primary buyer-facing surface for repeated agent work because they compress tool calls and return compact structured results instead of raw payload chains.
+
+## Execution surfaces
+### route
+- Method: POST
+- Path: /v1/route
+- Description: Buy ranked paid route recommendations for a capability query.
+- Pricing: balanced=$0.0250, highest_trust=$0.0500, lowest_price=$0.0150
+### route_probe
+- Method: POST
+- Path: /v1/route/probe
+- Description: Rank paid x402 endpoints by capability, price, trust, and freshness for agent workflows. Useful for endpoint discovery, route selection, and paid API lookup on Base. Token-efficient execution surface for agents: returns compact structured output instead of raw upstream payloads.
+- Pricing: balanced=$0.0250
+### alchemist_transform_probe
+- Method: POST
+- Path: /v1/alchemist/transform/probe
+- Description: Normalize raw API output into structured artifacts for downstream agent use. Useful for JSON cleanup, schema normalization, and structured extraction. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### alchemist_fetch_transform_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/probe
+- Description: Fetch live upstream data and transform it into consistent machine-readable artifacts. Useful for selector lookups, contract inspection, weather, website extraction, and search pipelines. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### alchemist_materialize_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/probe
+- Description: Generate ready-to-use state artifacts for wallets, contracts, providers, and token flows. Useful for wallet intelligence, provider monitoring, contract state, and token-flow analysis. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### prediction_polymarket_order_probe
+- Method: POST
+- Path: /v1/predictions/polymarket/orders/probe
+- Description: Submit live Polymarket orders through the paid execution lane. Useful for order placement, execution, and trading-agent workflows. Token-efficient execution surface for agents: returns compact structured output instead of raw upstream payloads.
+- Pricing: default=$0.0100
+### social_x_tweets_probe
+- Method: POST
+- Path: /v1/social/x/tweets/probe
+- Description: Create paid text-only X posts, replies, and quote tweets through the public Social X lane. Useful for posting, replies, quote tweets, and social automations. Token-efficient execution surface for agents: returns compact structured output instead of raw upstream payloads.
+- Pricing: default=$0.0025
+### social_x_tweets_delete_probe
+- Method: POST
+- Path: /v1/social/x/tweets/delete/probe
+- Description: Delete a paid X post through the public Social X delete lane. Useful for moderation workflows, social cleanup, and tweet deletion. Token-efficient execution surface for agents: returns compact structured output instead of raw upstream payloads.
+- Pricing: default=$0.0025
+### fetch_transform_source_4byte_signature_lookup_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/4byte-signature-lookup/probe
+- Description: 4byte Signature Lookup: Resolve an EVM selector into candidate function signatures from 4byte.directory. Useful for selector decoding, calldata inspection, ABI triage, and contract reverse engineering. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### fetch_transform_source_whatsabi_contract_abi_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/whatsabi-contract-abi/probe
+- Description: WhatsABI Contract ABI: Inspect a Base contract with WhatsABI and recover proxy-aware ABI hints. Useful for ABI recovery, proxy inspection, contract debugging, and onchain research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0100
+### fetch_transform_source_openweather_current_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/openweather-current/probe
+- Description: OpenWeather Current: Fetch current weather conditions and normalize them into compact agent-ready output. Useful for travel planning, logistics agents, weather briefings, and weather-triggered ops. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_google_gemini_flash_structured_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/google-gemini-flash-structured/probe
+- Description: Google Gemini Flash Structured Output: Turn a prompt plus JSON context into schema-constrained structured output through Gemini Flash. Useful for grounded extraction, classification, validation, brief generation, and compact operator-ready JSON. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_google_gemini_flash_research_extract_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/google-gemini-flash-research-extract/probe
+- Description: Google Gemini Flash Research Extract: Answer a bounded question against supplied evidence excerpts and return cited findings only from that evidence. Useful for cited research briefs, evidence extraction, due diligence, and operator answers that stay grounded in source text. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_cloudflare_crawl_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/cloudflare-crawl/probe
+- Description: Cloudflare Crawl: Crawl a website through Cloudflare Browser Rendering and normalize the result into a capped crawl summary. Useful for docs discovery, site mapping, content inventories, due diligence, and website research pipelines. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0100
+### fetch_transform_source_dune_dataset_search_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/dune-dataset-search/probe
+- Description: Dune Dataset Search: Search Dune's public dataset catalog for relevant onchain tables and views. Useful for analytics planning, schema discovery, and onchain research setup. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_dune_table_schema_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/dune-table-schema/probe
+- Description: Dune Table Schema: Resolve Dune tables into stable column-level schema metadata. Useful for SQL planning, query validation, dataset inspection, and analytics agents. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_dune_run_sql_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/dune-run-sql/probe
+- Description: Dune Run SQL: Execute bounded read-only DuneSQL and return normalized result artifacts. Useful for onchain analytics, ad hoc SQL, market briefs, and data-backed research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0100
+### fetch_transform_source_stableenrich_exa_search_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/stableenrich-exa-search/probe
+- Description: StableEnrich Exa Search: Run grounded Exa web searches and normalize the result set for downstream agents. Useful for web research, source collection, discovery workflows, and cited answers. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_stableenrich_exa_answer_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/stableenrich-exa-answer/probe
+- Description: StableEnrich Exa Answer: Generate a grounded answer with citations through StableEnrich's Exa-backed answer lane. Useful for quick factual answers, cited research, and concise synthesis agents. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_stableenrich_firecrawl_scrape_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/stableenrich-firecrawl-scrape/probe
+- Description: StableEnrich Firecrawl Scrape: Scrape a webpage through StableEnrich and return normalized content artifacts. Useful for website extraction, docs ingestion, due diligence, and page summarization pipelines. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_stableenrich_apollo_org_search_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/stableenrich-apollo-org-search/probe
+- Description: StableEnrich Apollo Org Search: Search organizations through StableEnrich with allowlisted Apollo filters. Useful for provider research, company discovery, prospecting, and B2B enrichment workflows. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_stableenrich_grok_x_search_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/stableenrich-grok-x-search/probe
+- Description: StableEnrich Grok X Search: Search X and Twitter posts through StableEnrich with a strict query-only interface. Useful for social monitoring, trend search, X research, and realtime topic scans. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_aixbt_projects_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/aixbt-projects/probe
+- Description: AIXBT Projects: List AIXBT-scored projects with ranking, popularity, and crypto narrative metadata. Useful for crypto project discovery, AI-agent market scans, leaderboard views, and early-stage research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_aixbt_project_detail_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/aixbt-project-detail/probe
+- Description: AIXBT Project Detail: Resolve one AIXBT project into a detailed profile with scores, links, and narrative context. Useful for project dossiers, token diligence, creator research, and AI-agent market overviews. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_aixbt_project_search_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/aixbt-project-search/probe
+- Description: AIXBT Project Search: Search AIXBT projects with bounded text plus allowlisted score and identity filters. Useful for project discovery, thesis screening, watchlist building, and topic-based crypto research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_aixbt_projects_compare_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/aixbt-projects-compare/probe
+- Description: AIXBT Projects Compare: Compare two to five AIXBT projects across project detail, signals, and momentum history. Useful for competitive analysis, shortlist comparisons, investment memos, and crypto project ranking debates. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0100
+### fetch_transform_source_aixbt_signals_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/aixbt-signals/probe
+- Description: AIXBT Signals: List recent AIXBT signals and optionally scope them to one resolved project. Useful for momentum tracking, catalyst monitoring, watchlists, and crypto project briefings. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_aixbt_momentum_history_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/aixbt-momentum-history/probe
+- Description: AIXBT Momentum History: Fetch recent AIXBT momentum history for one project and normalize the trend window. Useful for trend analysis, momentum charts, watchlist reviews, and project performance tracking. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_aixbt_clusters_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/aixbt-clusters/probe
+- Description: AIXBT Clusters: List AIXBT narrative and project clusters with stable normalized fields. Useful for narrative mapping, sector discovery, cluster overviews, and theme-based crypto research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_messari_asset_details_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-asset-details/probe
+- Description: Messari Asset Details: Fetch a bounded crypto asset profile with fundamentals, taxonomy, and summary context. Useful for token research, market briefs, crypto diligence, and asset overview agents. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_messari_asset_timeseries_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-asset-timeseries/probe
+- Description: Messari Asset Timeseries: Fetch a bounded Messari metric window and normalize it into asset timeseries points. Useful for token charts, metric tracking, market briefs, and time-windowed crypto analysis. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_messari_news_feed_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-news-feed/probe
+- Description: Messari News Feed: Fetch recent Messari crypto news with stable normalized fields and optional asset filters. Useful for asset news monitoring, market briefs, event watchlists, and crypto research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0100
+### fetch_transform_source_messari_token_unlocks_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-token-unlocks/probe
+- Description: Messari Token Unlocks: Fetch upcoming token unlock events for one asset and normalize the release schedule. Useful for unlock watchlists, supply overhang analysis, token calendars, and market-risk briefs. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_messari_stablecoins_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-stablecoins/probe
+- Description: Messari Stablecoins: List stablecoin market snapshots from Messari with flat machine-friendly fields. Useful for stablecoin scoreboards, market-share snapshots, treasury monitoring, and payments research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### fetch_transform_source_messari_funding_rounds_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-funding-rounds/probe
+- Description: Messari Funding Rounds: List recent Messari fundraising rounds and normalize the round metadata into compact records. Useful for startup tracking, venture market scans, funding digests, and crypto ecosystem research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_messari_x_users_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-x-users/probe
+- Description: Messari X Users: List Messari X-user signal profiles for leaderboard, account ranking, and automation workflows. Useful for social leaderboards, creator monitoring, mindshare scans, and crypto-X research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_messari_x_user_details_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-x-user-details/probe
+- Description: Messari X User Details: Fetch one Messari X-user profile with stable normalized social and signal fields. Useful for creator dossiers, handle research, social scorecards, and analyst watchlists. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_messari_x_users_timeseries_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/messari-x-users-timeseries/probe
+- Description: Messari X Users Timeseries: Fetch bounded daily Messari X-user signal timeseries for one or more accounts. Useful for mindshare trends, social performance charts, creator monitoring, and campaign analysis. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_twitsh_user_lookup_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/twitsh-user-lookup/probe
+- Description: twit.sh User Lookup: Look up an X account by username and normalize the profile payload. Useful for profile enrichment, handle verification, account research, and creator lookups. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### fetch_transform_source_twitsh_tweet_lookup_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/twitsh-tweet-lookup/probe
+- Description: twit.sh Tweet Lookup: Look up a single X post by id and normalize the tweet payload into stable fields. Useful for post inspection, receipt capture, moderation review, and citation-safe social research. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### fetch_transform_source_twitsh_tweet_search_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/twitsh-tweet-search/probe
+- Description: twit.sh Tweet Search: Search X posts with bounded operators and return compact normalized result sets. Useful for topic monitoring, trend scans, social listening, and realtime market chatter. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_twitsh_user_timeline_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/twitsh-user-timeline/probe
+- Description: twit.sh User Timeline: Fetch a user's recent X timeline and normalize the tweet list with continuation support. Useful for account monitoring, feed review, creator summaries, and social research agents. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_twitsh_tweet_replies_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/twitsh-tweet-replies/probe
+- Description: twit.sh Tweet Replies: Fetch replies to a tweet and normalize the reply list with continuation support. Useful for conversation monitoring, community analysis, moderation review, and support workflows. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_twitsh_tweet_quotes_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/twitsh-tweet-quotes/probe
+- Description: twit.sh Quote Tweets: Fetch quote tweets for a post and normalize the quote list with continuation support. Useful for virality tracking, quote monitoring, reaction analysis, and campaign measurement. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### fetch_transform_source_twitsh_conversation_lookup_probe
+- Method: POST
+- Path: /v1/alchemist/fetch-transform/twitsh-conversation-lookup/probe
+- Description: twit.sh Conversation Lookup: Fetch a root tweet plus the first page of replies in one normalized conversation payload. Useful for thread review, reply-tree analysis, customer support triage, and social audits. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### materialize_template_wallet_activity_delta_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/wallet-activity-delta/probe
+- Description: Wallet Activity Delta: Materialize recent Base wallet transfers with opaque delta cursors for repeated polling. Useful for wallet monitoring, transfer alerts, agent watchlists, and repeated polling workflows. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### materialize_template_wallet_portfolio_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/wallet-portfolio/probe
+- Description: Wallet Portfolio: Materialize Base token balances, token metadata, and recent balance changes. Useful for portfolio snapshots, treasury monitoring, balance tracking, and wallet intelligence. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### materialize_template_base_wallet_usdc_forensics_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/base-wallet-usdc-forensics/probe
+- Description: Base Wallet USDC Forensics: Materialize USDC funder, sink, counterparty, and recent activity summaries for one Base wallet. Useful for wallet due diligence, treasury investigations, funding-source analysis, and stablecoin tracing. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### materialize_template_allium_wallet_transactions_raw_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/allium-wallet-transactions-raw/probe
+- Description: Allium Wallet Transactions Raw: Materialize Allium-backed Base wallet transfers with normalized transaction rows and labels. Useful for wallet trace exports, transaction backfills, Base activity analysis, and raw transfer review. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### materialize_template_allium_wallet_balances_raw_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/allium-wallet-balances-raw/probe
+- Description: Allium Wallet Balances Raw: Materialize Allium-backed Base wallet balances with normalized token metadata and raw amounts. Useful for balance exports, token inventory snapshots, treasury monitoring, and Base portfolio audits. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### materialize_template_allium_wallet_counterparties_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/allium-wallet-counterparties/probe
+- Description: Allium Wallet Counterparties: Materialize aggregated inbound, outbound, and mixed counterparty summaries for one Base wallet. Useful for wallet clustering, counterparty mapping, relationship analysis, and fraud review. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### materialize_template_allium_wallet_labels_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/allium-wallet-labels/probe
+- Description: Allium Wallet Labels: Materialize Allium-backed wallet label summaries grouped by frequency and associated counterparties. Useful for label enrichment, entity hints, wallet investigations, and address annotation workflows. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### materialize_template_contract_event_window_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/contract-event-window/probe
+- Description: Contract Event Window: Materialize recent Base contract logs with topic filters and structured event rows. Useful for contract monitoring, event exports, protocol ops, and onchain debugging. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### materialize_template_token_flow_snapshot_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/token-flow-snapshot/probe
+- Description: Token Flow Snapshot: Materialize recent Base token transfer flow with treasury and concentration summaries. Useful for treasury flow monitoring, whale tracking, token diligence, and market surveillance. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### materialize_template_endpoint_or_provider_state_bundle_probe
+- Method: POST
+- Path: /v1/alchemist/materialize/endpoint-or-provider-state-bundle/probe
+- Description: Endpoint Or Provider State Bundle: Materialize a single JSON bundle with endpoint or provider trust, payment, probe, and onchain evidence. Useful for provider diligence, endpoint reviews, readiness checks, and monitoring bundles. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### allium_wallet_transactions_raw_probe
+- Method: POST
+- Path: /upstreams/allium/v1/wallet/transactions/probe
+- Description: Allium Wallet Transactions Raw: Proxy raw Base wallet transfers through 402.bot with normalized transaction rows. Useful for wallet backfills, transaction exports, transfer analysis, and Base activity review. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### allium_wallet_balances_raw_probe
+- Method: POST
+- Path: /upstreams/allium/v1/wallet/balances/probe
+- Description: Allium Wallet Balances Raw: Proxy raw Base wallet balances through 402.bot with normalized token metadata. Useful for balance snapshots, token inventory exports, treasury views, and portfolio audits. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### allium_wallet_counterparties_probe
+- Method: POST
+- Path: /upstreams/allium/v1/wallet/counterparties/probe
+- Description: Allium Wallet Counterparties: Return aggregated inbound, outbound, and mixed counterparty summaries for a Base wallet. Useful for wallet clustering, relationship mapping, counterparty analysis, and investigations. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0075
+### allium_wallet_labels_probe
+- Method: POST
+- Path: /upstreams/allium/v1/wallet/labels/probe
+- Description: Allium Wallet Labels: Return grouped wallet label summaries and associated counterparties for one Base wallet. Useful for address labeling, entity hints, wallet investigations, and enrichment workflows. Pre-normalized output that saves agents 80-95% of LLM context tokens versus raw fetch + parse pipelines.
+- Pricing: default=$0.0050
+### recipe_wallet_intel_brief_probe
+- Method: POST
+- Path: /v1/recipes/wallet-intel-brief/probe
+- Description: Wallet Intel Brief: Summarize a Base wallet's balances, recent transfers, and repeated counterparties in one brief. Build a reusable wallet dossier by combining portfolio state, recent wallet activity, and a structured Gemini summary. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_base_wallet_usdc_forensics_probe
+- Method: POST
+- Path: /v1/recipes/base-wallet-usdc-forensics/probe
+- Description: Base Wallet USDC Forensics: Pull the Heurist-backed Base wallet USDC forensics bundle on the existing materialization surface. Return the raw public Heurist-backed wallet forensics payload for a Base wallet, including top funders, sinks, counterparties, and daily USDC activity. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_treasury_risk_watch_probe
+- Method: POST
+- Path: /v1/recipes/treasury-risk-watch/probe
+- Description: Treasury Risk Watch: Track treasury wallet exposure and recent movement for a single Base wallet. Produce a treasury-oriented risk brief from portfolio composition and recent wallet activity focused on the supplied wallet address. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_contract_quickstart_pack_probe
+- Method: POST
+- Path: /v1/recipes/contract-quickstart-pack/probe
+- Description: Contract Quickstart Pack: Inspect a Base contract and turn ABI plus proxy metadata into an integration starter brief. Bundle ABI recovery and contract metadata into a concise pack for developers integrating or reviewing a Base contract. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_provider_due_diligence_pack_probe
+- Method: POST
+- Path: /v1/recipes/provider-due-diligence-pack/probe
+- Description: Provider Due Diligence Pack: Combine 402.bot state, fresh web context, and a structured review for one provider or endpoint subject. Produce a go-or-no-go provider packet by blending 402.bot state bundle data with external search and a scraped reference page. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_prospect_dossier_probe
+- Method: POST
+- Path: /v1/recipes/prospect-dossier/probe
+- Description: Prospect Dossier: Assemble a prospect brief from Apollo-style org lookup, web search, and scraped public context. Create a structured outbound or partnership dossier using deterministic org search, web search, and a scraped reference page. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_site_to_dataset_probe
+- Method: POST
+- Path: /v1/recipes/site-to-dataset/probe
+- Description: Site To Dataset: Scrape a site entry page, extract a constrained dataset, and normalize it into a canonical JSON bundle. Use a deterministic page scrape plus Gemini structured extraction to turn a site into a reusable dataset. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_zyfai_quickstart_pack_probe
+- Method: POST
+- Path: /v1/recipes/zyfai-quickstart-pack/probe
+- Description: Zyfai Quickstart Pack: Turn Zyfai's public skill and SDK docs into a structured onboarding pack for agent wallet yield automation. Scrape Zyfai's public skill and SDK docs, then return a read-only quickstart pack covering supported chains, API key creation, wallet connection modes, the Safe/session flow, example integration code, and risk notes. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_messari_asset_snapshot_probe
+- Method: POST
+- Path: /v1/recipes/messari-asset-snapshot/probe
+- Description: Messari Asset Snapshot: Return a flat machine-friendly Messari asset snapshot without the heavier research brief steps. Use the Messari asset-details source to emit a compact fundamentals snapshot for one asset with no internal AI synthesis. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_messari_news_wire_probe
+- Method: POST
+- Path: /v1/recipes/messari-news-wire/probe
+- Description: Messari News Wire: Return a compact Messari crypto-news wire for one asset without long-form summarization. Use the Messari news-feed source to flatten recent asset-linked coverage into a concise machine-friendly wire format. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_messari_unlock_watch_probe
+- Method: POST
+- Path: /v1/recipes/messari-unlock-watch/probe
+- Description: Messari Unlock Watch: Return the upcoming Messari unlock schedule for one asset in a flat monitoring-friendly shape. Use the Messari token-unlocks source to flatten a bounded unlock schedule for one asset without running AI synthesis. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_messari_stablecoin_scoreboard_probe
+- Method: POST
+- Path: /v1/recipes/messari-stablecoin-scoreboard/probe
+- Description: Messari Stablecoin Scoreboard: Return a compact stablecoin scoreboard from Messari without spending tokens on narrative synthesis. Use the Messari stablecoins source to flatten the leading stablecoin market snapshots for dashboards and automation. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_messari_funding_rounds_digest_probe
+- Method: POST
+- Path: /v1/recipes/messari-funding-rounds-digest/probe
+- Description: Messari Funding Rounds Digest: Return a flat Messari fundraising digest for downstream monitoring and triage. Use the Messari funding-rounds source to flatten recent fundraising rounds without escalating into a longer research workflow. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_messari_x_user_leaderboard_probe
+- Method: POST
+- Path: /v1/recipes/messari-x-user-leaderboard/probe
+- Description: Messari X User Leaderboard: Return a bounded Messari X-user leaderboard in a machine-friendly shape that avoids extra summarization tokens. Use the Messari X-users source to flatten the top signal accounts for leaderboard, ranking, and watchlist automation. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_messari_x_user_scorecard_probe
+- Method: POST
+- Path: /v1/recipes/messari-x-user-scorecard/probe
+- Description: Messari X User Scorecard: Combine one Messari X-user profile with recent daily signal history into a compact scorecard. Use Messari X-user details plus daily timeseries to summarize one account's signal posture without paying for the full asset-intel workflow. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_messari_asset_pulse_brief_probe
+- Method: POST
+- Path: /v1/recipes/messari-asset-pulse-brief/probe
+- Description: Messari Asset Pulse Brief: Combine Messari fundamentals, recent price history, and news into a lighter-weight brief than the full intel recipe. Use Messari asset details, bounded timeseries, and recent news to produce a concise pulse brief without the extra Messari AI synthesis step. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_messari_asset_intel_brief_probe
+- Method: POST
+- Path: /v1/recipes/messari-asset-intel-brief/probe
+- Description: Messari Asset Intel Brief: Turn Messari fundamentals, timeseries, news, unlocks, and internal AI synthesis into a compact operator brief. Fetch bounded Messari asset details, metric history, recent news, and token unlocks, then combine Messari AI synthesis with Gemini structured formatting for an operator-ready brief. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_aixbt_momentum_brief_probe
+- Method: POST
+- Path: /v1/recipes/aixbt-momentum-brief/probe
+- Description: AIXBT Momentum Brief: Turn structured AIXBT project data plus Indigo synthesis into a concise market-momentum brief. Fetch structured AIXBT Projects data, run Indigo over x402 for narrative synthesis, and return a compact market brief with top projects, bullish drivers, watch items, and follow-up questions. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_aixbt_project_dossier_probe
+- Method: POST
+- Path: /v1/recipes/aixbt-project-dossier/probe
+- Description: AIXBT Project Dossier: Build a one-project AIXBT research dossier from the public AIXBT projects surface. Resolve one AIXBT project from the public projects surface and return a grounded dossier with thesis, relative momentum framing, risks, watch items, and follow-up questions. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_aixbt_watchlist_digest_probe
+- Method: POST
+- Path: /v1/recipes/aixbt-watchlist-digest/probe
+- Description: AIXBT Watchlist Digest: Summarize a manual AIXBT watchlist of 2-5 projects without requiring saved watchlists yet. Summarize a small manual watchlist of AIXBT projects against the current public projects surface and return a compact digest with leaders, watch items, and next questions. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_aixbt_project_compare_probe
+- Method: POST
+- Path: /v1/recipes/aixbt-project-compare/probe
+- Description: AIXBT Project Compare: Compare 2-5 AIXBT projects side by side from the current public projects surface. Compare multiple AIXBT projects from the current public projects surface and return a concise brief with leaders and key differences. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_dune_onchain_brief_probe
+- Method: POST
+- Path: /v1/recipes/dune-onchain-brief/probe
+- Description: Dune Onchain Brief: Turn an onchain question into dataset discovery, schema inspection, DuneSQL execution, and a compact brief. Use Dune's dataset catalog and SQL execution APIs behind one paid recipe that picks candidate tables, inspects schemas, runs one bounded DuneSQL query, and summarizes the result. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_cited_research_brief_probe
+- Method: POST
+- Path: /v1/recipes/cited-research-brief/probe
+- Description: Cited Research Brief: Search, scrape, and extract a grounded answer with citations for a bounded research question. Create a short cited memo by combining deterministic Exa search, a scraped top result, and a structured Gemini synthesis over supplied evidence. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_x_thread_brief_probe
+- Method: POST
+- Path: /v1/recipes/x-thread-brief/probe
+- Description: X Thread Brief: Summarize a thread, its replies, and quote-tweet themes from one X post id. Pull a thread root, first-page replies, and quote tweets into one structured social summary for operators or researchers. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_topic_radar_probe
+- Method: POST
+- Path: /v1/recipes/topic-radar/probe
+- Description: Topic Radar: Blend recent and higher-signal X search results into a current topic brief with themes and notable posts. Monitor a live topic by combining broad twit.sh search results with a higher-signal subset and a structured Gemini summary. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_weather_ops_trigger_probe
+- Method: POST
+- Path: /v1/recipes/weather-ops-trigger/probe
+- Description: Weather Ops Trigger: Normalize current weather for a location into a flattened, ops-friendly decision payload. Fetch current weather and timezone context from Open-Meteo and flatten it into a clean operational payload suitable for simple alerting or scheduling logic. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_wallet_allocation_brief_probe
+- Method: POST
+- Path: /v1/recipes/wallet-allocation-brief/probe
+- Description: Wallet Allocation Brief: Turn a Base wallet portfolio into an allocation brief with concentration and stability signals. Analyze Base wallet holdings with a portfolio-first view focused on concentration, stablecoin share, and visible allocation flags. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_stablecoin_liquidity_brief_probe
+- Method: POST
+- Path: /v1/recipes/wallet-stablecoin-liquidity-brief/probe
+- Description: Wallet Stablecoin Liquidity Brief: Assess a Base wallet's stablecoin posture and liquidity mix from portfolio state alone. Generate a stablecoin and liquidity brief that separates liquid core assets from tail exposure and highlights operational watch items. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_counterparty_map_probe
+- Method: POST
+- Path: /v1/recipes/wallet-counterparty-map/probe
+- Description: Wallet Counterparty Map: Map the top inbound and outbound counterparties for a Base wallet over a bounded recent window. Use recent wallet activity to surface repeated counterparties, directional flow patterns, and practical follow-up checks. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_activity_digest_probe
+- Method: POST
+- Path: /v1/recipes/wallet-activity-digest/probe
+- Description: Wallet Activity Digest: Convert recent Base wallet activity into a short chronological digest with alert-style signals. Use recent wallet transfers to produce a concise activity digest, highlighting movement spikes, fresh activity, and recommended review actions. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_contract_admin_surface_brief_probe
+- Method: POST
+- Path: /v1/recipes/contract-admin-surface-brief/probe
+- Description: Contract Admin Surface Brief: Inspect a Base contract ABI for admin, pause, mint, burn, and upgrade-style control surfaces. Use WhatsABI output to summarize privileged functions, likely administrative capabilities, and practical operational review notes. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_contract_proxy_brief_probe
+- Method: POST
+- Path: /v1/recipes/contract-proxy-brief/probe
+- Description: Contract Proxy Brief: Inspect a Base contract for proxy and implementation hints using WhatsABI output. Generate a proxy-focused contract brief that summarizes implementation hints, upgrade model clues, and practical review notes. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_selector_candidate_pack_probe
+- Method: POST
+- Path: /v1/recipes/selector-candidate-pack/probe
+- Description: Selector Candidate Pack: Normalize candidate function signatures for one EVM selector into a machine-friendly shortlist. Use 4byte lookup output and a deterministic transform step to return a clean shortlist of candidate signatures for a selector. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_selector_security_brief_probe
+- Method: POST
+- Path: /v1/recipes/selector-security-brief/probe
+- Description: Selector Security Brief: Turn one EVM selector into a short security-oriented interpretation with ambiguity warnings. Resolve a selector through 4byte and generate a review brief focused on likely semantics, ambiguity, and privileged-action clues. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_contract_docs_research_pack_probe
+- Method: POST
+- Path: /v1/recipes/contract-docs-research-pack/probe
+- Description: Contract Docs Research Pack: Combine contract ABI hints with public docs context for a single Base contract and project. Blend WhatsABI output, Exa search, a scraped public page, and Gemini structuring into a cited integration and risk packet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_provider_payment_readiness_brief_probe
+- Method: POST
+- Path: /v1/recipes/provider-payment-readiness-brief/probe
+- Description: Provider Payment Readiness Brief: Summarize payment readiness and x402 launch posture for one provider or endpoint subject. Generate a concise payment-readiness brief from the 402.bot provider or endpoint state bundle with an emphasis on x402 launch posture. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_allium_wallet_balance_brief_probe
+- Method: POST
+- Path: /v1/recipes/allium-wallet-balance-brief/probe
+- Description: Allium Wallet Balance Brief: Summarize one Base wallet's Allium-backed balance state into a short operator brief. Use Allium-backed wallet balances to produce a concise holdings and concentration brief for one Base wallet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_allium_wallet_activity_brief_probe
+- Method: POST
+- Path: /v1/recipes/allium-wallet-activity-brief/probe
+- Description: Allium Wallet Activity Brief: Turn Allium-backed wallet transactions into a short recent-activity brief. Use Allium-backed wallet transactions to summarize recent movement, repeated counterparties, and practical next actions for one Base wallet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_allium_wallet_counterparty_brief_probe
+- Method: POST
+- Path: /v1/recipes/allium-wallet-counterparty-brief/probe
+- Description: Allium Wallet Counterparty Brief: Summarize the top Allium-backed counterparties for one Base wallet. Generate a short counterparty brief from Allium-backed Base wallet activity with emphasis on repeated relationships and operator risk notes. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_allium_wallet_labels_brief_probe
+- Method: POST
+- Path: /v1/recipes/allium-wallet-labels-brief/probe
+- Description: Allium Wallet Labels Brief: Summarize the most common Allium-backed labels attached to recent wallet activity. Generate a short label-centric brief from Allium-backed Base wallet activity, including label highlights and notable counterparties. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_allium_treasury_watch_probe
+- Method: POST
+- Path: /v1/recipes/allium-treasury-watch/probe
+- Description: Allium Treasury Watch: Combine Allium-backed balances, counterparties, and labels into a treasury-oriented watch brief. Use Allium-backed wallet intelligence to generate a treasury watch brief with strengths, risks, and next actions for one Base wallet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_allium_wallet_investigation_pack_probe
+- Method: POST
+- Path: /v1/recipes/allium-wallet-investigation-pack/probe
+- Description: Allium Wallet Investigation Pack: Combine raw Allium transactions, counterparties, labels, and wallet holdings into one investigation dossier. Build an investigation-ready Base wallet brief from Allium-backed transaction, counterparty, and label evidence plus wallet holdings. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_token_flow_risk_pack_probe
+- Method: POST
+- Path: /v1/recipes/token-flow-risk-pack/probe
+- Description: Token Flow Risk Pack: Combine onchain token flow anomalies with public web context into one cited Base token-risk memo. Use recent token flow snapshots plus bounded public search evidence to produce a cited token-risk memo for one Base asset. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_contract_activity_risk_pack_probe
+- Method: POST
+- Path: /v1/recipes/contract-activity-risk-pack/probe
+- Description: Contract Activity Risk Pack: Combine ABI hints, recent contract event activity, and public context into one cited contract-activity risk memo. Use WhatsABI, recent contract event windows, and bounded search evidence to generate a cited Base contract-activity brief. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_x_account_dossier_probe
+- Method: POST
+- Path: /v1/recipes/x-account-dossier/probe
+- Description: X Account Dossier: Combine profile lookup, recent timeline activity, and broader public context into one account dossier. Use twit.sh account data plus StableEnrich Exa public context to produce a reputation and opportunity dossier for one account. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_x_topic_intel_dossier_probe
+- Method: POST
+- Path: /v1/recipes/x-topic-intel-dossier/probe
+- Description: X Topic Intel Dossier: Combine broad X search, broader public evidence, and a grounded answer into one topic-intel dossier. Use twit.sh plus StableEnrich Exa search to produce a structured topic dossier with narrative shifts and monitoring advice. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_polymarket_performance_brief_probe
+- Method: POST
+- Path: /v1/recipes/polymarket-performance-brief/probe
+- Description: Polymarket Performance Brief: Summarize a wallet's recent Polymarket performance, notable winners and losers, and practical follow-ups. Use the public Polymarket analytics surface to turn one wallet's recent performance into a concise operator brief grounded in realized and unrealized results. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_polymarket_pnl_scorecard_probe
+- Method: POST
+- Path: /v1/recipes/polymarket-pnl-scorecard/probe
+- Description: Polymarket PnL Scorecard: Return a flat machine-friendly Polymarket PnL scorecard for one wallet. Use the public Polymarket analytics payload and normalize the core scorecard fields for downstream automation without Gemini summarization. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_polymarket_open_positions_brief_probe
+- Method: POST
+- Path: /v1/recipes/polymarket-open-positions-brief/probe
+- Description: Polymarket Open Positions Brief: Summarize a wallet's open Polymarket positions, concentration, and exit watch items. Use the public Polymarket analytics surface to turn one wallet's open positions into a concise exposure brief for operator review. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_polymarket_closed_trades_review_probe
+- Method: POST
+- Path: /v1/recipes/polymarket-closed-trades-review/probe
+- Description: Polymarket Closed Trades Review: Summarize a wallet's closed Polymarket trades into a compact review memo. Use the public Polymarket analytics payload to review recent closed trades, strongest outcomes, weakest outcomes, and repeatable patterns. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_polymarket_activity_digest_probe
+- Method: POST
+- Path: /v1/recipes/polymarket-activity-digest/probe
+- Description: Polymarket Activity Digest: Turn recent Polymarket activity into a short digest with buy/sell bias and watch items. Use the public Polymarket analytics surface to summarize recent trade flow, directional bias, notable markets, and follow-ups for one wallet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_polymarket_risk_watch_probe
+- Method: POST
+- Path: /v1/recipes/polymarket-risk-watch/probe
+- Description: Polymarket Risk Watch: Turn Polymarket performance analytics into a concise risk memo with drawdown and behavior flags. Use the public Polymarket analytics payload to summarize risk level, drawdown context, concentration risks, behavior flags, and practical limits. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_polymarket_wallet_dossier_probe
+- Method: POST
+- Path: /v1/recipes/polymarket-wallet-dossier/probe
+- Description: Polymarket Wallet Dossier: Combine performance, exposure, and recent behavior into one Polymarket wallet dossier. Use the public Polymarket analytics surface to turn one wallet's recent performance and exposure into a single operator dossier. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_prediction_market_topic_radar_probe
+- Method: POST
+- Path: /v1/recipes/prediction-market-topic-radar/probe
+- Description: Prediction Market Topic Radar: Search X and the public web for one prediction-market topic, then return a concise radar memo. Use TwitSh plus public web search to summarize one prediction-market topic with market signals, bullish and bearish themes, and monitoring suggestions. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_prediction_market_thread_brief_probe
+- Method: POST
+- Path: /v1/recipes/prediction-market-thread-brief/probe
+- Description: Prediction Market Thread Brief: Summarize one prediction-market thread, its replies, and quote-tweet reaction patterns. Pull a thread root, first-page replies, and quote tweets into one structured summary focused on bullish and bearish themes in prediction-market discussion. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_superfluid_skill_quickstart_pack_probe
+- Method: POST
+- Path: /v1/recipes/superfluid-skill-quickstart-pack/probe
+- Description: Superfluid Skill Quickstart Pack: Turn Superfluid's official skill docs into a structured onboarding pack for agent builders. Scrape Superfluid's official landing page, skill docs, plugin manifests, and repo guide, then return a read-only onboarding pack covering install paths, update paths, supported agents, coverage areas, bundled scripts, and risk notes. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_askgina_predictions_quickstart_pack_probe
+- Method: POST
+- Path: /v1/recipes/askgina-predictions-quickstart-pack/probe
+- Description: AskGina Predictions Quickstart Pack: Turn AskGina's public predictions MCP docs into a structured onboarding pack for operators. Scrape AskGina's public predictions MCP docs and return a read-only quickstart pack covering server identity, supported capabilities, setup steps, client touchpoints, and risk notes. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_provider_incident_watch_probe
+- Method: POST
+- Path: /v1/recipes/provider-incident-watch/probe
+- Description: Provider Incident Watch: Combine provider state, public claims, and bounded evidence into one cited provider incident and readiness memo. Use the provider state bundle plus public search and scrape context to produce a cited incident and launch-readiness memo. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_site_due_diligence_pack_probe
+- Method: POST
+- Path: /v1/recipes/site-due-diligence-pack/probe
+- Description: Site Due Diligence Pack: Combine a bounded primary-page scrape and public context into one cited diligence memo. Use a bounded primary-page scrape plus public search evidence to produce a cited diligence memo for one site and question. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_competitor_intel_matrix_probe
+- Method: POST
+- Path: /v1/recipes/competitor-intel-matrix/probe
+- Description: Competitor Intel Matrix: Combine org lookup, public search, grounded answers, and scraped context into one competitor matrix. Use Apollo org search plus public web context to produce a structured competitor and positioning brief for one company or domain. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_weather_disruption_brief_probe
+- Method: POST
+- Path: /v1/recipes/weather-disruption-brief/probe
+- Description: Weather Disruption Brief: Blend current weather, web context, and social chatter into one operational disruption brief. Use OpenWeather plus bounded web and social search results to summarize potential operational disruption for a location and topic. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_selector_docs_triage_pack_probe
+- Method: POST
+- Path: /v1/recipes/selector-docs-triage-pack/probe
+- Description: Selector Docs Triage Pack: Combine selector lookup, docs search, and grounded public context into one selector triage brief. Use 4byte lookup plus bounded public search context to produce a selector triage brief with integration and security implications. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_profile_brief_probe
+- Method: POST
+- Path: /v1/recipes/bankr-profile-brief/probe
+- Description: Bankr Profile Brief: Summarize the configured Bankr operator profile, linked wallets, socials, and Bankr Club state. Pull the configured Bankr profile and turn it into a concise operator identity brief with linked-wallet and social-account context. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_bankr_base_balance_brief_probe
+- Method: POST
+- Path: /v1/recipes/bankr-base-balance-brief/probe
+- Description: Bankr Base Balance Brief: Summarize Bankr-reported Base balances with top tokens, concentration, and watch items. Use Bankr balances on Base as the factual input for a concise operator treasury brief focused on token concentration and watch items. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_bankr_identity_balance_dossier_probe
+- Method: POST
+- Path: /v1/recipes/bankr-identity-balance-dossier/probe
+- Description: Bankr Identity Balance Dossier: Combine the Bankr profile and balances into one operator dossier. Produce a single operator dossier by joining the configured Bankr identity profile with the latest visible chain balances. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_chain_balance_snapshot_probe
+- Method: POST
+- Path: /v1/recipes/bankr-chain-balance-snapshot/probe
+- Description: Bankr Chain Balance Snapshot: Return a simple one-chain Bankr token snapshot without Gemini summarization. Use Bankr balances to emit a flat Base token snapshot with address, total USD, and token rows for downstream automation. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_bankr_fee_inspection_brief_probe
+- Method: POST
+- Path: /v1/recipes/bankr-fee-inspection-brief/probe
+- Description: Bankr Fee Inspection Brief: Run a Bankr Agent API fee query and summarize opportunities, risks, and next actions. Use a caller-supplied Bankr Agent API fee query as the factual source, then turn the completed job output into an operator brief. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_unclaimed_fee_checklist_probe
+- Method: POST
+- Path: /v1/recipes/bankr-unclaimed-fee-checklist/probe
+- Description: Bankr Unclaimed Fee Checklist: Run the default unclaimed-fee Bankr query and return a checklist-style operator output. Use the default Bankr fee query, or a caller override, to produce a concise checklist of tokens, tasks, and next steps. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_prompt_probe_report_probe
+- Method: POST
+- Path: /v1/recipes/bankr-prompt-probe-report/probe
+- Description: Bankr Prompt Probe Report: Probe the Bankr prompt lane without paying and return raw transport diagnostics. Use the Bankr prompt probe to inspect transport status, headers, and response body before attempting a paid Bankr prompt flow. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_bankr_paid_prompt_brief_probe
+- Method: POST
+- Path: /v1/recipes/bankr-paid-prompt-brief/probe
+- Description: Bankr Paid Prompt Brief: Run a paid Bankr prompt job and summarize the completed output with wallet-source context. Submit a live Bankr paid prompt, wait for completion, and turn the response into a concise operator brief with wallet-source context. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_launch_readiness_brief_probe
+- Method: POST
+- Path: /v1/recipes/bankr-launch-readiness-brief/probe
+- Description: Bankr Launch Readiness Brief: Simulate a Bankr token launch and summarize fee split, returned identifiers, and readiness notes. Force a simulated Bankr launch, persist the launch record, and turn the returned fee split and identifiers into a launch-readiness brief. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_token_launch_probe
+- Method: POST
+- Path: /v1/recipes/bankr-token-launch/probe
+- Description: Bankr Token Launch: Submit a Bankr token launch request with live launch as the default behavior when enabled. Run the internal Bankr token-launch source through a public paid recipe. The recipe defaults to a live launch unless simulated is explicitly set to true. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_zapper_provider_overview_brief_probe
+- Method: POST
+- Path: /v1/recipes/zapper-provider-overview-brief/probe
+- Description: Zapper Provider Overview Brief: Summarize Zapper's fixed provider profile, docs host, readiness state, and current payment posture. Use the fixed Zapper provider-state bundle to generate a concise provider overview covering identity, docs, readiness, and payment posture. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_zapper_provider_scorecard_probe
+- Method: POST
+- Path: /v1/recipes/zapper-provider-scorecard/probe
+- Description: Zapper Provider Scorecard: Return a machine-friendly scorecard for Zapper's provider readiness and observed onchain/payment signals. Flatten the fixed Zapper provider-state bundle into a scorecard with readiness counts, payment totals, and onchain evidence for automation. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_zapper_endpoint_catalog_brief_probe
+- Method: POST
+- Path: /v1/recipes/zapper-endpoint-catalog-brief/probe
+- Description: Zapper Endpoint Catalog Brief: Summarize the fixed Zapper provider's matched endpoints, trust posture, and likely best-use roles. Use the fixed Zapper provider-state bundle to produce an endpoint catalog brief with matched endpoints, trust posture, and practical roles. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_zapper_payment_signal_watch_probe
+- Method: POST
+- Path: /v1/recipes/zapper-payment-signal-watch/probe
+- Description: Zapper Payment Signal Watch: Summarize Zapper's observed paid-endpoint signals, promoted endpoints, and monitoring priorities. Use the fixed Zapper provider-state bundle to summarize observed payment signals, promoted endpoints, and watch items for ongoing monitoring. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_zapper_docs_due_diligence_pack_probe
+- Method: POST
+- Path: /v1/recipes/zapper-docs-due-diligence-pack/probe
+- Description: Zapper Docs Due Diligence Pack: Combine Zapper provider state, docs scrape, and bounded public evidence into a cited diligence memo. Use the fixed Zapper provider-state bundle, a docs scrape, and bounded public search evidence to produce a cited diligence memo. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_zapper_wallet_balance_brief_probe
+- Method: POST
+- Path: /v1/recipes/zapper-wallet-balance-brief/probe
+- Description: Zapper Wallet Balance Brief: Summarize one Base wallet's Zapper-reported token balances into a concise holdings and concentration brief. Use the internal Zapper wallet-balance source on Base to produce a concise holdings, concentration, and watch-items brief for one wallet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_zapper_wallet_balance_snapshot_probe
+- Method: POST
+- Path: /v1/recipes/zapper-wallet-balance-snapshot/probe
+- Description: Zapper Wallet Balance Snapshot: Return a flat machine-friendly snapshot of one Base wallet's Zapper token balances without Gemini summarization. Use the internal Zapper wallet-balance source on Base to emit a simple snapshot of visible token balances for downstream automation. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_zapper_token_price_brief_probe
+- Method: POST
+- Path: /v1/recipes/zapper-token-price-brief/probe
+- Description: Zapper Token Price Brief: Summarize one Base token's Zapper price, liquidity, and momentum signals into a concise market brief. Use the internal Zapper token-price source on Base to summarize price, liquidity, and short-horizon momentum for one token. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_zapper_token_price_snapshot_probe
+- Method: POST
+- Path: /v1/recipes/zapper-token-price-snapshot/probe
+- Description: Zapper Token Price Snapshot: Return a flat machine-friendly snapshot of one Base token's Zapper market data without Gemini summarization. Use the internal Zapper token-price source on Base to emit a simple machine-friendly market snapshot for downstream automation. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0050
+### recipe_zapper_wallet_market_brief_probe
+- Method: POST
+- Path: /v1/recipes/zapper-wallet-market-brief/probe
+- Description: Zapper Wallet Market Brief: Combine one Base wallet's Zapper balance view with one Base token's market snapshot into a single brief. Use Zapper wallet balances plus one Zapper token-price read to summarize wallet composition and focus-token market context together. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bridge_route_scorecard_probe
+- Method: POST
+- Path: /v1/recipes/bridge-route-scorecard/probe
+- Description: Bridge Route Scorecard: Rank bridge-ready lanes, public bridge context, and next actions for a crosschain move. Use the internal route shortlist plus bounded public bridge context to build a compact bridge scorecard for agents planning a crosschain move. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_gas_window_brief_probe
+- Method: POST
+- Path: /v1/recipes/gas-window-brief/probe
+- Description: Gas Window Brief: Summarize Base gas conditions into a compact execution-window brief. Use the internal Base gas snapshot to tell an agent whether now looks cheap, normal, or worth waiting out before execution. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_gas_spike_watch_probe
+- Method: POST
+- Path: /v1/recipes/gas-spike-watch/probe
+- Description: Gas Spike Watch: Turn the current Base gas snapshot plus public context into a spike watch memo. Combine the Base gas window with bounded public context so agents can tell whether a fee bump looks routine or incident-like. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_yield_rotation_shortlist_probe
+- Method: POST
+- Path: /v1/recipes/yield-rotation-shortlist/probe
+- Description: Yield Rotation Shortlist: Shortlist yield-ready lanes and public market context for one asset and target network. Use the internal route shortlist plus bounded public search context to rank visible yield lanes without making an agent scrape and compare them by hand. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_yield_rate_change_watch_probe
+- Method: POST
+- Path: /v1/recipes/yield-rate-change-watch/probe
+- Description: Yield Rate Change Watch: Summarize visible yield-rate changes and what they likely mean for one asset. Use the internal yield shortlist plus bounded public context to explain whether visible rate changes look durable, promotional, or worth waiting on. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_crosschain_wallet_migration_plan_probe
+- Method: POST
+- Path: /v1/recipes/crosschain-wallet-migration-plan/probe
+- Description: Crosschain Wallet Migration Plan: Combine Base wallet state, crosschain balances, and bridge context into a migration plan. Use Base portfolio state, Zapper balance coverage, and bridge route context to compress a crosschain wallet migration plan into one operator packet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_wallet_pretrade_checklist_probe
+- Method: POST
+- Path: /v1/recipes/wallet-pretrade-checklist/probe
+- Description: Wallet Pretrade Checklist: Compress balances, fresh activity, gas, and approvals into a pretrade readiness checklist. Use wallet state, recent activity, Base gas, and approval surface data to give an agent one compact go / watch / block checklist before a trade. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_approval_risk_brief_probe
+- Method: POST
+- Path: /v1/recipes/wallet-approval-risk-brief/probe
+- Description: Wallet Approval Risk Brief: Summarize active ERC20 approvals for one Base wallet into a compact risk brief. Use the internal approval surface to show which spenders are currently active, where unlimited approvals exist, and what an operator should review next. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_exit_liquidity_plan_probe
+- Method: POST
+- Path: /v1/recipes/wallet-exit-liquidity-plan/probe
+- Description: Wallet Exit Liquidity Plan: Compress wallet balances, approvals, gas, and exit priorities into one liquidity plan. Use Base wallet state, crosschain balances, gas, and approval surface data to prepare a bounded wallet exit and liquidity plan. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_wallet_tx_explainer_digest_probe
+- Method: POST
+- Path: /v1/recipes/wallet-tx-explainer-digest/probe
+- Description: Wallet Transaction Explainer Digest: Turn recent wallet transactions into a short operator digest instead of a raw transfer feed. Use Allium-backed wallet transactions to explain what just happened, which counterparties matter, and what an operator should check next. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_stablecoin_flow_radar_probe
+- Method: POST
+- Path: /v1/recipes/stablecoin-flow-radar/probe
+- Description: Stablecoin Flow Radar: Summarize one token's recent flow snapshot into a compact stablecoin radar. Use the token-flow materialization to highlight flow bias, dominant participants, anomaly flags, and next actions for a stablecoin or treasury token. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_market_regime_brief_probe
+- Method: POST
+- Path: /v1/recipes/market-regime-brief/probe
+- Description: Market Regime Brief: Turn one asset's Messari fundamentals, trend, and news into a compact regime brief. Use bounded Messari asset reads to describe the current market regime, key narrative context, and operator next actions without a long memo. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_funding_oi_squeeze_watch_probe
+- Method: POST
+- Path: /v1/recipes/funding-oi-squeeze-watch/probe
+- Description: Funding / OI Squeeze Watch: Search public market chatter for funding and open-interest squeeze signals, then compress it into one watch memo. Use bounded X and web context to surface funding-rate, positioning, and squeeze-risk chatter without forcing an agent to read dozens of posts. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_narrative_vs_positioning_brief_probe
+- Method: POST
+- Path: /v1/recipes/narrative-vs-positioning-brief/probe
+- Description: Narrative vs Positioning Brief: Compare public narrative with token-flow positioning for one asset or thesis. Use public X and web context plus a bounded token-flow snapshot to show where narrative and positioning align or diverge. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_x_account_sentiment_shift_probe
+- Method: POST
+- Path: /v1/recipes/x-account-sentiment-shift/probe
+- Description: X Account Sentiment Shift: Turn one X account's timeline and public context into a compact sentiment-shift brief. Use TwitSh and bounded public context to tell an agent how an account's recent tone, engagement, and related discourse appear to be shifting. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_launch_reaction_radar_probe
+- Method: POST
+- Path: /v1/recipes/launch-reaction-radar/probe
+- Description: Launch Reaction Radar: Search X, the public web, and a launch page to summarize first-wave reaction to a launch or announcement. Use bounded social, web, and primary-page context to tell an agent how a launch is landing, what themes dominate, and what to do next. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_stablecoin_depeg_response_brief_probe
+- Method: POST
+- Path: /v1/recipes/stablecoin-depeg-response-brief/probe
+- Description: Stablecoin Depeg Response Brief: Combine stablecoin market state and public chatter into a compact depeg response brief. Use bounded stablecoin market data plus public X and web context to compress a depeg scare into one operator response packet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bridge_incident_watch_probe
+- Method: POST
+- Path: /v1/recipes/bridge-incident-watch/probe
+- Description: Bridge Incident Watch: Combine bridge route visibility and public chatter into a compact bridge incident watch. Use the internal bridge shortlist plus public X and web context to show whether bridge chatter looks routine or worth escalating. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_docs_change_risk_watch_probe
+- Method: POST
+- Path: /v1/recipes/docs-change-risk-watch/probe
+- Description: Docs Change Risk Watch: Turn a docs page and bounded public context into a compact change-risk watch. Use a primary docs scrape plus public web context to highlight what appears important on a page and what an operator should watch next. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_provider_switchboard_brief_probe
+- Method: POST
+- Path: /v1/recipes/provider-switchboard-brief/probe
+- Description: Provider Switchboard Brief: Rank visible paid routes for one capability and compress the tradeoffs into one switchboard brief. Use the internal route shortlist plus bounded public context to recommend a best-fit provider lane for one capability and response format. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_capability_route_budget_pack_probe
+- Method: POST
+- Path: /v1/recipes/capability-route-budget-pack/probe
+- Description: Capability Route Budget Pack: Rank paid route candidates, price ceilings, and next actions for one capability request. Use route candidates plus bounded public context to return a compact operator board for endpoint selection without making an agent compare providers by hand. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_provider_endpoint_onboarding_checklist_probe
+- Method: POST
+- Path: /v1/recipes/provider-endpoint-onboarding-checklist/probe
+- Description: Provider Endpoint Onboarding Checklist: Turn provider docs and public context into a compact onboarding checklist for one endpoint family. Scrape the provider surface once, pull bounded public context, and return a compact onboarding checklist instead of a long research memo. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_provider_endpoint_smoke_plan_probe
+- Method: POST
+- Path: /v1/recipes/provider-endpoint-smoke-plan/probe
+- Description: Provider Endpoint Smoke Plan: Turn provider docs and public context into a compact smoke-test plan for one endpoint path. Return a short operator smoke plan with checks, likely failure modes, and next actions instead of forcing an agent to draft one from scratch. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_provider_docs_delta_brief_probe
+- Method: POST
+- Path: /v1/recipes/provider-docs-delta-brief/probe
+- Description: Provider Docs Delta Brief: Compare the current provider docs scrape against an optional previous snapshot and return only the meaningful deltas. Use one docs scrape and an optional previous snapshot to compress provider-doc changes into a small delta brief with follow-up actions. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_dune_query_setup_pack_probe
+- Method: POST
+- Path: /v1/recipes/dune-query-setup-pack/probe
+- Description: Dune Query Setup Pack: Turn a Dune question into a compact setup pack with candidate tables, schema cues, and next actions. Use bounded dataset search and schema inspection to return a short Dune setup packet instead of making an agent browse tables and infer the plan manually. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_allowance_cleanup_plan_probe
+- Method: POST
+- Path: /v1/recipes/wallet-allowance-cleanup-plan/probe
+- Description: Wallet Allowance Cleanup Plan: Turn wallet approvals and current Base gas context into a compact cleanup checklist. Return a short approval cleanup plan with risk cues and next actions instead of making an agent inspect every spender one by one. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_anomaly_delta_brief_probe
+- Method: POST
+- Path: /v1/recipes/wallet-anomaly-delta-brief/probe
+- Description: Wallet Anomaly Delta Brief: Compare wallet activity and balances against an optional prior snapshot to surface only the meaningful anomalies. Compress wallet activity deltas and fresh balances into a short anomaly brief that saves agents from re-reading raw wallet history. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_wallet_ops_handover_packet_probe
+- Method: POST
+- Path: /v1/recipes/wallet-ops-handover-packet/probe
+- Description: Wallet Ops Handover Packet: Combine portfolio, transfers, and approvals into one short handover packet for wallet operators. Replace several separate wallet reads with one bounded handover packet that is ready to paste into an operator shift handoff. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_wallet_stablecoin_deployment_checklist_probe
+- Method: POST
+- Path: /v1/recipes/wallet-stablecoin-deployment-checklist/probe
+- Description: Wallet Stablecoin Deployment Checklist: Turn a wallet portfolio, gas window, and route shortlist into a compact stablecoin deployment checklist. Return a short deployment checklist for moving or deploying stablecoins instead of forcing an agent to inspect balances, gas, and routes separately. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_wallet_counterparty_triage_board_probe
+- Method: POST
+- Path: /v1/recipes/wallet-counterparty-triage-board/probe
+- Description: Wallet Counterparty Triage Board: Turn wallet counterparties and label hints into one compact counterparty triage board. Compress counterparty and label review into a short operator board instead of forcing an agent to inspect raw wallet intelligence line by line. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_contract_integration_risk_checklist_probe
+- Method: POST
+- Path: /v1/recipes/contract-integration-risk-checklist/probe
+- Description: Contract Integration Risk Checklist: Turn ABI shape, optional docs, and public context into a compact contract integration checklist. Return a bounded integration risk checklist for one contract instead of making an agent re-read ABI and docs separately before integration. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_contract_monitoring_watchlist_probe
+- Method: POST
+- Path: /v1/recipes/contract-monitoring-watchlist/probe
+- Description: Contract Monitoring Watchlist: Turn one ABI into a compact monitoring watchlist with the highest-signal things to track. Compress ABI review into a short monitoring watchlist so an agent can start tracking a contract without carrying the full ABI around in context. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_selector_ambiguity_triage_probe
+- Method: POST
+- Path: /v1/recipes/selector-ambiguity-triage/probe
+- Description: Selector Ambiguity Triage: Turn a selector lookup and optional ABI context into a compact ambiguity triage board. Return the likely selector meaning, ambiguity notes, and follow-up actions without forcing an agent to compare signatures manually. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_contract_upgrade_readiness_brief_probe
+- Method: POST
+- Path: /v1/recipes/contract-upgrade-readiness-brief/probe
+- Description: Contract Upgrade Readiness Brief: Turn ABI and public context into a compact upgrade-readiness packet for one contract. Return a bounded upgrade-readiness checklist with risks and next actions instead of a long narrative about the whole contract. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_docs_to_runbook_brief_probe
+- Method: POST
+- Path: /v1/recipes/docs-to-runbook-brief/probe
+- Description: Docs To Runbook Brief: Turn one docs site crawl into a compact runbook brief with sections, guardrails, and next actions. Replace a long docs review with one bounded runbook packet that is easier for agents and operators to reuse. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_asset_news_change_alert_probe
+- Method: POST
+- Path: /v1/recipes/asset-news-change-alert/probe
+- Description: Asset News Change Alert: Turn one asset profile and its recent news into a compact change alert for operators. Compress Messari asset context and recent news into a small delta-style alert that is faster to consume than a full asset memo. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_token_unlock_action_checklist_probe
+- Method: POST
+- Path: /v1/recipes/token-unlock-action-checklist/probe
+- Description: Token Unlock Action Checklist: Turn asset details, unlocks, and timeseries context into a compact token unlock checklist. Compress Messari unlock data and current asset context into one short action checklist instead of a longer token unlock memo. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_project_momentum_shift_alert_probe
+- Method: POST
+- Path: /v1/recipes/project-momentum-shift-alert/probe
+- Description: Project Momentum Shift Alert: Turn project detail, momentum history, and signals into a compact momentum-shift alert. Compress AIXBT project context into a short delta-style alert that is easier for agents to consume than a full project dossier. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_x_post_reply_escalation_brief_probe
+- Method: POST
+- Path: /v1/recipes/x-post-reply-escalation-brief/probe
+- Description: X Post Reply Escalation Brief: Turn a post, its replies, and its quote tweets into a compact escalation board for operators. Compress a post’s reply and quote-tweet activity into a short escalation board so agents do not have to carry the whole conversation thread in context. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_topic_risk_escalation_board_probe
+- Method: POST
+- Path: /v1/recipes/topic-risk-escalation-board/probe
+- Description: Topic Risk Escalation Board: Turn X search and public web context into a compact topic-risk escalation board. Compress topic monitoring into a short escalation board so agents do not have to scrape and summarize the same chatter repeatedly. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_wallet_to_token_entry_pack_probe
+- Method: POST
+- Path: /v1/recipes/wallet-to-token-entry-pack/probe
+- Description: Wallet To Token Entry Pack: Turn wallet balance, token context, liquidity, and a live quote into a compact entry packet. Compress wallet cash, token context, Uniswap liquidity, and recent Messari coverage into one bounded entry packet instead of forcing agents to compare each source by hand. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_position_sizing_guardrails_brief_probe
+- Method: POST
+- Path: /v1/recipes/position-sizing-guardrails-brief/probe
+- Description: Position Sizing Guardrails Brief: Turn wallet cash, token price history, unlock risk, liquidity, and a live quote into sizing guardrails. Compress position sizing into one bounded packet with starter, base, and max sizing bands so agents do not have to infer guardrails across balance, unlock, and liquidity reads. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_breakout_entry_sanity_check_probe
+- Method: POST
+- Path: /v1/recipes/breakout-entry-sanity-check/probe
+- Description: Breakout Entry Sanity Check: Combine token price, recent history, liquidity, news, and a live quote into a compact breakout sanity check. Compress a breakout entry decision into one bounded packet so agents can decide whether to chase small, wait for a retest, or skip entirely. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_mean_reversion_entry_brief_probe
+- Method: POST
+- Path: /v1/recipes/mean-reversion-entry-brief/probe
+- Description: Mean Reversion Entry Brief: Combine token price, recent history, liquidity, news, and a live quote into a compact mean-reversion brief. Compress a dip-buy decision into one bounded packet so agents can decide whether to scale in, keep watching, or skip the trade. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_swap_route_slippage_brief_probe
+- Method: POST
+- Path: /v1/recipes/swap-route-slippage-brief/probe
+- Description: Swap Route Slippage Brief: Compare 402.bot route candidates against a live Uniswap quote and return a compact swap-routing brief. Compress swap venue selection into one bounded packet so agents can compare route candidates, visible slippage, and execution steps without shopping each lane manually. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_stablecoin_redeployment_board_probe
+- Method: POST
+- Path: /v1/recipes/stablecoin-redeployment-board/probe
+- Description: Stablecoin Redeployment Board: Rank a handful of candidate tokens for stablecoin redeployment in one compact board. Compress candidate scoring, liquidity, quote context, and next actions into one redeployment board instead of making agents compare each token one by one. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_top_holdings_rotation_plan_probe
+- Method: POST
+- Path: /v1/recipes/top-holdings-rotation-plan/probe
+- Description: Top Holdings Rotation Plan: Turn a wallet plus a short candidate set into a compact trim/add/hold rotation plan. Compress wallet rotation work into one bounded packet so agents can move from holdings review to concrete trim/add/hold decisions without a second synthesis pass. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_winner_trim_and_rotate_pack_probe
+- Method: POST
+- Path: /v1/recipes/winner-trim-and-rotate-pack/probe
+- Description: Winner Trim And Rotate Pack: Turn one winning position plus a few destination candidates into a staged trim-and-rotate packet. Compress trim-and-rotate planning into one bounded packet so agents can move directly from profit-taking intent to a staged redistribution plan. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_underperformer_exit_board_probe
+- Method: POST
+- Path: /v1/recipes/underperformer-exit-board/probe
+- Description: Underperformer Exit Board: Combine wallet context, market signals, liquidity, and an exit quote into a compact exit board. Compress exit planning into one bounded board so agents can decide whether to exit, reduce, or hold without carrying all the source data in context. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_watchlist_capital_allocation_pack_probe
+- Method: POST
+- Path: /v1/recipes/watchlist-capital-allocation-pack/probe
+- Description: Watchlist Capital Allocation Pack: Turn a short token watchlist into a compact capital-allocation board. Compress watchlist comparison into one bounded board so agents can move from candidate review to a practical allocation split without a second round of manual comparisons. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_wallet_risk_budget_rebalance_probe
+- Method: POST
+- Path: /v1/recipes/wallet-risk-budget-rebalance/probe
+- Description: Wallet Risk Budget Rebalance: Turn wallet context plus a short candidate set into a compact target-mix rebalance packet. Compress risk-budget work into one bounded packet so agents can move from wallet review to a concrete target mix without repeating the same comparison loop. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_unlock_front_run_risk_board_probe
+- Method: POST
+- Path: /v1/recipes/unlock-front-run-risk-board/probe
+- Description: Unlock Front Run Risk Board: Combine wallet context, token unlocks, history, and a protective exit quote into a compact risk board. Compress unlock risk review into one bounded packet so agents can decide whether to de-risk before an unlock window without carrying all the raw context. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_news_vs_price_divergence_alert_probe
+- Method: POST
+- Path: /v1/recipes/news-vs-price-divergence-alert/probe
+- Description: News Vs Price Divergence Alert: Compare price action, recent news, and liquidity context in a compact divergence alert. Compress narrative-versus-market drift into one bounded alert so agents can spot when price and news are no longer telling the same story. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_liquidity_fragility_trade_brief_probe
+- Method: POST
+- Path: /v1/recipes/liquidity-fragility-trade-brief/probe
+- Description: Liquidity Fragility Trade Brief: Combine market context, visible liquidity, and a live quote into a compact fragility brief. Compress size-versus-liquidity review into one bounded brief so agents can quickly decide whether a trade size is clear, worth watching, or too fragile. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_stablecoin_risk_off_switchboard_probe
+- Method: POST
+- Path: /v1/recipes/stablecoin-risk-off-switchboard/probe
+- Description: Stablecoin Risk Off Switchboard: Turn wallet context, candidate risk, and route options into a compact risk-off switchboard. Compress a move-to-stables decision into one bounded switchboard so agents can plan staged de-risking without re-running the same comparison work. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_execution_prompt_checklist_probe
+- Method: POST
+- Path: /v1/recipes/bankr-execution-prompt-checklist/probe
+- Description: Bankr Execution Prompt Checklist: Turn trade intent, quote context, and Bankr output into a compact execution checklist. Compress Bankr trade preparation into one bounded packet so agents can move from intent to a Bankr-ready prompt plus preflight checks without a second drafting loop. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_bankr_wallet_trade_digest_probe
+- Method: POST
+- Path: /v1/recipes/bankr-wallet-trade-digest/probe
+- Description: Bankr Wallet Trade Digest: Combine wallet context, market context, a live quote, and Bankr output into a compact trade digest. Compress trade handoff into one bounded packet so agents can move from wallet context to a Bankr-ready trade digest without building a separate memo. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0100
+### recipe_post_trade_watchtower_probe
+- Method: POST
+- Path: /v1/recipes/post-trade-watchtower/probe
+- Description: Post Trade Watchtower: Combine wallet, market, and liquidity context into a compact post-trade monitoring packet. Compress post-trade monitoring into one bounded packet so agents can keep only the triggers that matter instead of re-reading the whole setup. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_trade_invalidation_handover_packet_probe
+- Method: POST
+- Path: /v1/recipes/trade-invalidation-handover-packet/probe
+- Description: Trade Invalidation Handover Packet: Turn a live position plus current market context into a compact invalidation handoff packet. Compress ongoing trade review into one bounded handoff so agents can keep the thesis, invalidation, and next actions in a small structured packet. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### recipe_conviction_vs_liquidity_scorecard_probe
+- Method: POST
+- Path: /v1/recipes/conviction-vs-liquidity-scorecard/probe
+- Description: Conviction Vs Liquidity Scorecard: Compare thesis quality against visible liquidity and a live quote in one compact scorecard. Compress conviction-versus-execution review into one bounded scorecard so agents can see whether the story and the market structure still deserve a trade. Deterministic recipe run that avoids repeated scraping, cleanup, and prompt packing.
+- Pricing: default=$0.0075
+### alchemist_transform
+- Method: POST
+- Path: /v1/alchemist/transform
+- Description: Normalize upstream payloads into canonical JSON, CSV, or SQLite-ready artifacts.
+- Pricing: complex=$0.0100, medium=$0.0075, simple=$0.0050
+### alchemist_fetch_transform
+- Method: POST
+- Path: /v1/alchemist/fetch-transform
+- Description: Buy curated live fetch-and-normalize wrappers for 4byte selector lookup, WhatsABI contract inspection, OpenWeather current conditions, Cloudflare-powered website crawls, and StableEnrich search or research tools.
+- Pricing: complex=$0.0100, medium=$0.0075, simple=$0.0050
+### alchemist_materialize
+- Method: POST
+- Path: /v1/alchemist/materialize
+- Description: Buy always-hot wallet, contract-event, token-flow, and endpoint-or-provider state artifacts on Base mainnet.
+- Pricing: complex=$0.0100, medium=$0.0075, simple=$0.0050
+### prediction_polymarket_order
+- Method: POST
+- Path: /v1/predictions/polymarket/orders
+- Description: Submit live Polymarket CLOB orders through the official client.
+- Pricing: execution=$0.0100
+### social_x_tweet_create
+- Method: POST
+- Path: /v1/social/x/tweets
+- Description: Buy text-only X creates, replies, or quotes through twit.sh.
+- Pricing: execution=$0.0025
+### social_x_tweet_delete
+- Method: POST
+- Path: /v1/social/x/tweets/delete
+- Description: Buy single-tweet deletes through twit.sh.
+- Pricing: execution=$0.0025
+### recipe_run
+- Method: POST
+- Path: /v1/recipes/{slug}/run
+- Description: Run a published deterministic 402.bot recipe as a single creator-priced x402 endpoint, including Bankr-backed operator workflows exposed only through the recipe catalog.
+- Pricing: creator_priced=$0.0000
+## Fetch-transform sources
+### 4byte_signature_lookup
+- Name: 4byte Signature Lookup
+- Description: Resolve an EVM function selector into candidate text signatures from 4byte.directory.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: simple
+### aixbt_clusters
+- Name: AIXBT Clusters
+- Description: List AIXBT narrative or project clusters through the REST API with a stable normalized shape.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### aixbt_momentum_history
+- Name: AIXBT Momentum History
+- Description: Fetch the recent AIXBT momentum history for one resolved project.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### aixbt_project_detail
+- Name: AIXBT Project Detail
+- Description: Load one AIXBT project profile through the REST API and normalize it into a stable detail shape.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: medium
+### aixbt_project_search
+- Name: AIXBT Project Search
+- Description: Search the AIXBT Projects surface with allowlisted filters plus a bounded local text query.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### aixbt_projects
+- Name: AIXBT Projects
+- Description: Fetch structured AIXBT project data through the REST API, with x402 fallback when the API-key lane is unavailable.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### aixbt_projects_compare
+- Name: AIXBT Projects Compare
+- Description: Resolve 2-5 AIXBT projects, align detail, signals, and momentum history, and emit a structured comparison pack.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: complex
+### aixbt_signals
+- Name: AIXBT Signals
+- Description: List recent AIXBT signals through the REST API and optionally filter them to one resolved project.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### cloudflare_crawl
+- Name: Cloudflare Crawl
+- Description: Crawl a website with Cloudflare Browser Rendering and normalize the results into a capped JSON crawl summary.
+- Execution mode: async
+- Delivery formats: json, csv
+- Pricing tier: complex
+### dune_dataset_search
+- Name: Dune Dataset Search
+- Description: Search Dune's public dataset catalog for onchain tables relevant to an analysis question.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### dune_run_sql
+- Name: Dune Run SQL
+- Description: Execute a bounded read-only DuneSQL query asynchronously and persist normalized JSON plus CSV result artifacts.
+- Execution mode: async
+- Delivery formats: json, csv
+- Pricing tier: complex
+### dune_table_schema
+- Name: Dune Table Schema
+- Description: Resolve one to three Dune tables and return stable column-level schema metadata.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### google_gemini_flash_research_extract
+- Name: Google Gemini Flash Research Extract
+- Description: Answer a bounded research question against supplied source excerpts and return cited findings only from that evidence set.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### google_gemini_flash_structured
+- Name: Google Gemini Flash Structured Output
+- Description: Run a prompt plus optional JSON input through Gemini Flash and return schema-constrained JSON output.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: medium
+### messari_asset_details
+- Name: Messari Asset Details
+- Description: Fetch a bounded Messari asset profile with fundamentals, taxonomy, and summary context.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: medium
+### messari_asset_timeseries
+- Name: Messari Asset Timeseries
+- Description: Fetch a bounded Messari asset timeseries metric window and normalize it into points.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### messari_funding_rounds
+- Name: Messari Funding Rounds
+- Description: List bounded fundraising rounds from Messari and normalize the round metadata.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### messari_news_feed
+- Name: Messari News Feed
+- Description: Fetch recent Messari news items with optional asset filters and stable normalized fields.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: complex
+### messari_stablecoins
+- Name: Messari Stablecoins
+- Description: List bounded stablecoin market snapshots from Messari with flat machine-friendly fields.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: simple
+### messari_token_unlocks
+- Name: Messari Token Unlocks
+- Description: Fetch upcoming token unlocks for one asset and normalize the release schedule into events.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### messari_x_user_details
+- Name: Messari X User Details
+- Description: Fetch one Messari X-user profile by id or handle with stable normalized fields.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: medium
+### messari_x_users
+- Name: Messari X Users
+- Description: List bounded Messari X-user signal profiles for leaderboard and automation use cases.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### messari_x_users_timeseries
+- Name: Messari X Users Timeseries
+- Description: Fetch bounded daily Messari X-user signal timeseries and normalize them by user.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### openweather_current
+- Name: OpenWeather Current
+- Description: Fetch current weather for a latitude and longitude and normalize it into agent-ready output.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### stableenrich_apollo_org_search
+- Name: StableEnrich Apollo Org Search
+- Description: Search organizations through StableEnrich with allowlisted Apollo filters.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### stableenrich_exa_answer
+- Name: StableEnrich Exa Answer
+- Description: Generate a grounded answer with citations through StableEnrich's Exa-backed endpoint.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: medium
+### stableenrich_exa_search
+- Name: StableEnrich Exa Search
+- Description: Run allowlisted Exa web search queries through StableEnrich and normalize the results.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### stableenrich_firecrawl_scrape
+- Name: StableEnrich Firecrawl Scrape
+- Description: Scrape a single page with allowlisted Firecrawl options through StableEnrich.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### stableenrich_grok_x_search
+- Name: StableEnrich Grok X Search
+- Description: Search X/Twitter posts through StableEnrich with a strict query-only allowlist.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium
+### twitsh_conversation_lookup
+- Name: twit.sh Conversation Lookup
+- Description: Fetch a root tweet plus the first page of replies through twit.sh, with a continuation cursor for later reply pages.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: medium ($0.0150)
+### twitsh_tweet_lookup
+- Name: twit.sh Tweet Lookup
+- Description: Look up a single X post by id through twit.sh and normalize the tweet payload.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: simple ($0.0050)
+### twitsh_tweet_quotes
+- Name: twit.sh Quote Tweets
+- Description: Fetch quote tweets for a tweet through twit.sh, normalize the quote list, and emit a continuation cursor when more pages exist.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium ($0.0100)
+### twitsh_tweet_replies
+- Name: twit.sh Tweet Replies
+- Description: Fetch replies to a tweet through twit.sh, normalize the reply list, and emit a continuation cursor when more pages exist.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium ($0.0100)
+### twitsh_tweet_search
+- Name: twit.sh Tweet Search
+- Description: Search X posts through twit.sh with bounded query operators, normalize the result list, and emit a continuation cursor when more pages exist.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium ($0.0100)
+### twitsh_user_lookup
+- Name: twit.sh User Lookup
+- Description: Look up an X account by username through twit.sh and normalize the profile payload.
+- Execution mode: sync
+- Delivery formats: json
+- Pricing tier: simple ($0.0050)
+### twitsh_user_timeline
+- Name: twit.sh User Timeline
+- Description: Fetch a user's recent X timeline through twit.sh, normalize the tweet list, and emit a continuation cursor when more pages exist.
+- Execution mode: sync
+- Delivery formats: json, csv
+- Pricing tier: medium ($0.0100)
+### whatsabi_contract_abi
+- Name: WhatsABI Contract ABI
+- Description: Inspect Base mainnet contract bytecode with WhatsABI and resolve proxy ABI hints.
+- Execution mode: async
+- Delivery formats: json
+- Pricing tier: complex
+## Providers
+### zyfai-agents-zyf-ai
+- Name: Zyfai
+- Homepage: https://agents.zyf.ai
+- Profile: https://402.bot/providers/zyfai-agents-zyf-ai
+- Listing status: needs_fix
+- Verification: verified (skill_md)
+- Capabilities: 4byte_signature_lookup, abi-debugging, abi-intelligence, abi-review, activity-digest, agent wallets, agent_wallets, agent-api-discovery, agent-prompt, agent-registration, aixbt, aixbt_clusters, aixbt_momentum_history, aixbt_project_detail, aixbt_project_search, aixbt_projects, aixbt_projects_compare, aixbt_signals, alchemist, allium, allium_wallet_balances_raw, allium_wallet_counterparties, allium_wallet_labels, allium_wallet_transactions_raw, allocation-board, allocation-pack, ambiguity-triage, analytics, analytics-setup, approval-risk, askgina, asset-alert, asset-fundamentals, asset-intelligence, asset-pulse, asset-research, asset-snapshot, automation, balances, bankr, base, base_wallet_usdc_forensics, breakout, bridge, bridge-route, budgeting, capability-pack, catalog, cfa, change-detection, checklist, cited-brief, cleanup-plan, closed-trades, cloudflare_crawl, company-brief, compare, comparison, competitor-intel, contract_event_window, contract-abi, contract-activity, contract-admin-review, contract-analysis, contract-integration, contract-monitoring, contract-ops, contract-proxy-review, contract-research, contract-review, contract-risk, contract-upgrade, contract-upgradeability, contracts, conviction-scorecard, counterparties, counterparty_analysis, crawl, crosschain, crosschain-ops, crypto-news, dataset-generation, delta-brief, depeg-response, diagnostics, digest, diligence, dip-buy, directory, directory-registration, discovery, disruption-monitoring, divergence-alert, docs-change, docs-delta, docs-diligence, docs-intel, docs-research, docs-review, docs-runbook, docs-watch, dune, dune_dataset_search, dune_run_sql, dune_table_schema, endpoint_or_provider_state_bundle, endpoint-catalog, endpoint-checklist, endpoint-review, entity_labels, entry-brief, entry-pack, entry-sanity, escalation-board, event-review, evm-tooling, execution, execution-prompt, execution-timing, exit-board, fees, fetch-transform, funding, funding-rounds, fundraising, gas, gas-spike, gas-window, gda, go-to-market-research, goal-driven, google_gemini_flash_research_extract, google_gemini_flash_structured, guardrails, handover-packet, identity, incident-watch, indigo, invalidation, labels, launch, launch-reaction, leaderboard, liquidity-fragility, liquidity-plan, liquidity-scorecard, location-state, market-brief, market-checklist, market-intel, market-radar, market-regime, marketplace, markets, materialization, mcp, mean-reversion, memo, merchant_checkout, messari, messari_asset_details, messari_asset_timeseries, messari_funding_rounds, messari_news_feed, messari_stablecoins, messari_token_unlocks, messari_x_user_details, messari_x_users, messari_x_users_timeseries, momentum, momentum-alert, momentum-check, narrative, narrative-tracking, narrative-vs-price, network_intel, news-change, news-wire, normalization, onchain, open-interest, open-positions, openweather_current, operator, operator-brief, operator-dossier, operator-packet, ops-alerting, ops-input, ops-plan, paid-api, paid-prompt, partner-onboarding, partner-research, payment-telemetry, payment-watch, polymarket, portfolio-brief, position-sizing, positioning, post-trade, prediction-markets, prediction-threads, prediction-topics, predictions, profile, profit-taking, project-dossier, project-tracking, projects, prompt, prompt-probe, prospecting, protective-exit, provider-comparison, provider-monitoring, provider-onboarding, provider-overview, provider-payments, provider-readiness, provider-research, provider-review, provider-scorecard, provider-selection, provider-smoke, provider-switchboard, providers, public-recipe, public-write, quickstart, read-only, readiness-review, real-time-finance, recipes, registration-probe, reputation-monitoring, research, risk-board, risk-brief, risk-budget, risk-checklist, risk-off, risk-watch, rotation-plan, route-intelligence, route-planning, route-ranking, route-scorecard, route-selection, routing, runbook-brief, safe-subaccounts, sales-research, scoreboard, scorecard, selector-analysis, selector-lookup, selector-security, selector-triage, sentiment-shift, session-continuation, session-keys, simulation, site-diligence, site-extraction, size-check, slippage, snapshot, social, social-research, social-signals, social-triage, social-x, source-specific, sql, sql-setup, squeeze-watch, stablecoin, stablecoin-analysis, stablecoin-deployment, stablecoin-flows, stablecoin-forensics, stablecoin-redeployment, stablecoin-switchboard, stablecoins, stableenrich_apollo_org_search, stableenrich_exa_answer, stableenrich_exa_search, stableenrich_firecrawl_scrape, stableenrich_grok_x_search, streaming-payments, structured-brief, structured-data, super-tokens, superfluid, swap-routing, template-specific, thread-brief, thread-summary, token_flow_snapshot, token-buy, token-deploy, token-flow, token-flows, token-price, token-risk, token-unlocks, topic-monitoring, trade-checklist, trade-digest, trade-readiness, trading, transactions, transformation, transport, treasury, treasury-monitoring, treasury-risk, treasury-watch, triage-board, trim-and-rotate, trust-analysis, twitsh_conversation_lookup, twitsh_tweet_lookup, twitsh_tweet_quotes, twitsh_tweet_replies, twitsh_tweet_search, twitsh_user_lookup, twitsh_user_timeline, twitter, tx-explainer, underperformer-review, unlock-risk, unlock-watch, upgrade-readiness, venue-selection, wallet, wallet_activity_delta, wallet_automation, wallet_counterparties, wallet_intelligence, wallet_labels, wallet_portfolio, wallet-activity, wallet-allocation, wallet-analysis, wallet-analytics, wallet-anomaly, wallet-approvals, wallet-automation, wallet-balances, wallet-brief, wallet-checklist, wallet-counterparties, wallet-digest, wallet-dossier, wallet-entry, wallet-exit, wallet-forensics, wallet-handoff, wallet-handover, wallet-intelligence, wallet-investigation, wallet-labels, wallet-liquidity, wallet-market, wallet-migration, wallet-monitoring, wallet-ops, wallet-performance, wallet-pretrade, wallet-rebalance, wallet-scorecard, wallet-security, wallet-transactions, watchlist, watchlist-scoring, watchtower, weather, weather-ops, web-research, web-search, whatsabi_contract_abi, workflow_execution, workflow-execution, x, x-account, x-account-analysis, x-analysis, x-radar, x-replies, x-topic-monitoring, x-users, x402, x402-launch, yield, yield automation, yield_automation, yield-rate, yield-rotation, yield-shortlist, yield-watch, zapper, zyfai
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.
+### 402-bot-routing-oracle-api-402-bot
+- Name: 402.bot Routing Oracle
+- Homepage: https://api.402.bot
+- Profile: https://402.bot/providers/402-bot-routing-oracle-api-402-bot
+- Listing status: listed
+- Verification: verified (erc8004)
+- Capabilities: 4byte_signature_lookup, abi-debugging, abi-intelligence, abi-review, activity-digest, agent-prompt, aixbt, aixbt_clusters, aixbt_momentum_history, aixbt_project_detail, aixbt_project_search, aixbt_projects, aixbt_projects_compare, aixbt_signals, alchemist, allium, allium_wallet_balances_raw, allium_wallet_counterparties, allium_wallet_labels, allium_wallet_transactions_raw, allocation-board, allocation-pack, ambiguity-triage, analytics, analytics-setup, approval-risk, askgina, asset-alert, asset-fundamentals, asset-intelligence, asset-pulse, asset-research, asset-snapshot, automation, balances, bankr, base, base_wallet_usdc_forensics, breakout, bridge, bridge-route, budgeting, capability-pack, cfa, change-detection, checklist, cited-brief, cleanup-plan, closed-trades, cloudflare_crawl, company-brief, compare, competitor-intel, contract_event_window, contract-abi, contract-activity, contract-admin-review, contract-analysis, contract-integration, contract-monitoring, contract-ops, contract-proxy-review, contract-research, contract-review, contract-risk, contract-upgrade, contract-upgradeability, contracts, conviction-scorecard, counterparties, counterparty_analysis, crawl, crosschain, crosschain-ops, crypto-news, dataset-generation, delta-brief, depeg-response, diagnostics, digest, diligence, dip-buy, directory-registration, disruption-monitoring, divergence-alert, docs-change, docs-delta, docs-diligence, docs-intel, docs-research, docs-review, docs-runbook, docs-watch, dune, dune_dataset_search, dune_run_sql, dune_table_schema, endpoint_or_provider_state_bundle, endpoint-catalog, endpoint-checklist, endpoint-review, entity_labels, entry-brief, entry-pack, entry-sanity, escalation-board, event-review, evm-tooling, execution-prompt, execution-timing, exit-board, fees, fetch-transform, funding, funding-rounds, fundraising, gas, gas-spike, gas-window, gda, go-to-market-research, google_gemini_flash_research_extract, google_gemini_flash_structured, guardrails, handover-packet, identity, incident-watch, indigo, invalidation, labels, launch, launch-reaction, leaderboard, liquidity-fragility, liquidity-plan, liquidity-scorecard, location-state, market-brief, market-checklist, market-intel, market-radar, market-regime, markets, materialization, mean-reversion, memo, messari, messari_asset_details, messari_asset_timeseries, messari_funding_rounds, messari_news_feed, messari_stablecoins, messari_token_unlocks, messari_x_user_details, messari_x_users, messari_x_users_timeseries, momentum, momentum-alert, momentum-check, narrative, narrative-tracking, narrative-vs-price, news-change, news-wire, onchain, open-interest, open-positions, openweather_current, operator, operator-brief, operator-dossier, operator-packet, ops-alerting, ops-input, ops-plan, paid-prompt, partner-onboarding, partner-research, payment-watch, polymarket, portfolio-brief, position-sizing, positioning, post-trade, prediction-markets, prediction-threads, prediction-topics, predictions, profile, profit-taking, project-dossier, project-tracking, projects, prompt, prompt-probe, prospecting, protective-exit, provider-comparison, provider-monitoring, provider-onboarding, provider-overview, provider-payments, provider-readiness, provider-research, provider-review, provider-scorecard, provider-selection, provider-smoke, provider-switchboard, providers, public-recipe, quickstart, readiness-review, real-time-finance, recipes, registration-probe, reputation-monitoring, research, risk-board, risk-brief, risk-budget, risk-checklist, risk-off, risk-watch, rotation-plan, route-planning, route-ranking, route-scorecard, route-selection, routing, runbook-brief, safe-subaccounts, sales-research, scoreboard, scorecard, selector-analysis, selector-lookup, selector-security, selector-triage, sentiment-shift, session-keys, simulation, site-diligence, site-extraction, size-check, slippage, snapshot, social, social-research, social-signals, social-triage, social-x, source-specific, sql, sql-setup, squeeze-watch, stablecoin, stablecoin-analysis, stablecoin-deployment, stablecoin-flows, stablecoin-forensics, stablecoin-redeployment, stablecoin-switchboard, stablecoins, stableenrich_apollo_org_search, stableenrich_exa_answer, stableenrich_exa_search, stableenrich_firecrawl_scrape, stableenrich_grok_x_search, streaming-payments, structured-brief, structured-data, super-tokens, superfluid, swap-routing, template-specific, thread-brief, thread-summary, token_flow_snapshot, token-buy, token-deploy, token-flow, token-flows, token-price, token-risk, token-unlocks, topic-monitoring, trade-checklist, trade-digest, trade-readiness, trading, transactions, transformation, transport, treasury, treasury-monitoring, treasury-risk, treasury-watch, triage-board, trim-and-rotate, trust-analysis, twitsh_conversation_lookup, twitsh_tweet_lookup, twitsh_tweet_quotes, twitsh_tweet_replies, twitsh_tweet_search, twitsh_user_lookup, twitsh_user_timeline, twitter, tx-explainer, underperformer-review, unlock-risk, unlock-watch, upgrade-readiness, venue-selection, wallet, wallet_activity_delta, wallet_counterparties, wallet_intelligence, wallet_labels, wallet_portfolio, wallet-activity, wallet-allocation, wallet-analysis, wallet-anomaly, wallet-approvals, wallet-automation, wallet-balances, wallet-brief, wallet-checklist, wallet-counterparties, wallet-digest, wallet-dossier, wallet-entry, wallet-exit, wallet-forensics, wallet-handoff, wallet-handover, wallet-intelligence, wallet-investigation, wallet-labels, wallet-liquidity, wallet-market, wallet-migration, wallet-monitoring, wallet-ops, wallet-performance, wallet-pretrade, wallet-rebalance, wallet-scorecard, wallet-security, wallet-transactions, watchlist, watchlist-scoring, watchtower, weather, weather-ops, web-research, web-search, whatsabi_contract_abi, x, x-account, x-account-analysis, x-analysis, x-radar, x-replies, x-topic-monitoring, x-users, x402, x402-launch, yield, yield-rate, yield-rotation, yield-shortlist, yield-watch, zapper, zyfai
+- Readiness: list_now | Matched endpoints are live, paid, fresh, and backed by enough identity and security evidence to list publicly.
+### 402box
+- Name: 402box
+- Homepage: https://402box.io
+- Profile: https://402.bot/providers/402box
+- Listing status: needs_fix
+- Verification: verified (llms_txt)
+- Capabilities: account_manager, agent_marketplace, agent_suite, airdrop_economics_planner, alpha_finder, aml_kyc_framework_designer, bookkeeper_accountant, brand_strategist, business_analyst, business_intelligence_analyst, cfo_financial_strategist, compliance_officer, contact, content_strategist, contract_specialist, corporate_lawyer, cross_border_payments_banking_setup, crypto_tax_compliance_designer, cto_advisor, cultural_adaptation_consultant, customer_success_manager, customer_support_lead, data_scientist, devops_engineer, email_campaign_specialist, exchange_listing_compliance_package, financial_analyst, governance_framework_designer, growth_strategist, hr_manager, intellectual_property_advisor, international_pricing_strategist, international_team_hiring_strategist, it_support_manager, learning_development_specialist, liquidity_pool_strategy_designer, local_partnership_distribution_planner, market_entry_strategy_designer, market_research_analyst, marketing, marketing_analytics_consultant, money_transmitter_licensing_navigator, multilingual_community_growth_strategist, multisig_treasury_operations_designer, operations_manager, osint, paid_ads_specialist, payroll_specialist, prediction_markets, pricing_strategist, product_manager, progressive_decentralization_roadmap, project_manager, qa_testing_specialist, recruiter_talent_acquisition, regional_marketing_campaign_adapter, regional_regulatory_navigator, regulatory_classification_analyzer, sales_strategist, security_incident_response_planner, security_specialist, seo_keyword_researcher, smart_contract_audit_preparation, social_media_manager, social_search, strategy_consultant, tax_specialist, token_launch_sequencing_strategist, token_legal_documentation_writer, token_migration_bridge_planner, token_supply_distribution_designer, token_utility_mechanics_designer, translation_localization_brief_creator, treasury_diversification_strategist, vesting_schedule_architect, x_search, x_searcher, yield_incentive_designer
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.
+### twit-sh
+- Name: twit.sh
+- Homepage: https://twit.sh
+- Profile: https://402.bot/providers/twit-sh
+- Listing status: candidate
+- Verification: verified (operator_review)
+- Capabilities: articles, communities, conversation_replies, lists, lookup, post_lookup, post_search, posts, profile_lookup, quote_lookup, quote_search, quote_tweets, replies, reply_lookup, social, social_profile, social_search, thread_replies, timeline, timeline_lookup, tweet_detail, tweet_lookup, tweet_metrics, tweet_quotes, tweet_replies, tweet_search, tweets, twitter, twitter_profile, twitter_search, twitter_timeline, user_lookup, user_timeline, users, x, x_search, x_timeline
+- Readiness: monitor | The provider can be shown publicly, but security, identity, or domain evidence is still incomplete.
+### zapper-public-zapper-xyz
+- Name: Zapper
+- Homepage: https://public.zapper.xyz
+- Profile: https://402.bot/providers/zapper-public-zapper-xyz
+- Listing status: listed
+- Verification: verified (skill_md)
+- Capabilities: attestation_identity, identity, nft_metadata, nft-metadata, token_price, token-price, transaction_history, transaction-history, wallet_balances, wallet-balances, x402, zapper, zapper api, zapper_api
+- Readiness: list_now | Matched endpoints are live, paid, fresh, and backed by enough identity and security evidence to list publicly.
+### alchemy-alchemy-com
+- Name: Alchemy
+- Homepage: https://www.alchemy.com
+- Profile: https://402.bot/providers/alchemy-alchemy-com
+- Listing status: needs_fix
+- Verification: verified (skill_md)
+- Capabilities: address, alchemy, assets, balances, blockchain, by, contracts, crypto_data, data, defi, getcontractmetadata, getnftmetadata, getnftsforcontract, getnftsforowner, getownersforcontract, getownersfornft, historical, history, nft, nfts, price, prices, symbol, token, tokens, transactions, v2, wallet, x402
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.
+### allium
+- Name: Allium
+- Homepage: https://api.allium.so
+- Profile: https://402.bot/providers/allium
+- Listing status: needs_fix
+- Verification: verified (operator_review)
+- Capabilities: address, allium, at, balances, base, browse, chain, counterparties, counterparty_analysis, crypto_data, entity_labels, history, labels, pnl, price, prices, search, stats, timestamp, token, tokens, transactions, wallet, wallet_balances, wallet_counterparties, wallet_intelligence, wallet_labels, wallet_transactions
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.
+### coingecko
+- Name: CoinGecko
+- Homepage: https://www.coingecko.com/en/api/x402
+- Profile: https://402.bot/providers/coingecko
+- Listing status: needs_fix
+- Verification: verified (skill_md)
+- Capabilities: api, base, coingecko, crypto_data, market_data, onchain, pools, price, search, token, token_pricing, tokens, trending
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.
+### coinrailz
+- Name: Coinrailz
+- Homepage: https://coinrailz.com
+- Profile: https://402.bot/providers/coinrailz
+- Listing status: needs_fix
+- Verification: verified (x402_discovery)
+- Capabilities: agent_marketplace, ai_gateway, base, credit_scoring, defi, discovery, inference, llm_access, market_data, market_intelligence, merchant_checkout, micropayment_services, payment_gateway, payments, ping, prediction_markets, search, security, token_pricing, trader_focused, wallet_risk, x402
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.
+### messari
+- Name: Messari
+- Homepage: https://api.messari.io
+- Profile: https://402.bot/providers/messari
+- Listing status: needs_fix
+- Verification: verified (x402_discovery)
+- Capabilities: ai_research, asset_fundamentals, asset_timeseries, base, chat_completions, crypto_news, fundraising, market_data, market_intel, market_intelligence, research, social_signals, stablecoins, token_unlocks, x402
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.
+### dune
+- Name: Dune
+- Homepage: https://dune.com
+- Profile: https://402.bot/providers/dune
+- Listing status: listed
+- Verification: verified (operator_review)
+- Capabilities: agents, analytics, analytics-setup, blockchains, datasets, dune, mcp, onchain, onchain_analytics, research, sql, sql-setup
+- Readiness: list_now | Matched endpoints are live, paid, fresh, and backed by enough identity and security evidence to list publicly.
+### cred-protocol
+- Name: Cred Protocol
+- Homepage: https://credprotocol.com
+- Profile: https://402.bot/providers/cred-protocol
+- Listing status: needs_fix
+- Verification: verified (skill_md)
+- Capabilities: attestation_identity, base, credit_scoring, erc8004, feedback, identity, identity_verification, portfolio, reporting, reputation, sybil_detection, wallet_intelligence, wallet_risk, x402
+- Readiness: needs_fix | Core onboarding checks are still missing, so this provider should not be promoted yet.

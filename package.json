@@ -11,9 +11,6 @@
     "runtime.js",
     "README.md"
   ],
-  "scripts": {
-    "test": "bun test tests/402bot-cli.test.ts"
-  },
   "keywords": [
     "402bot",
     "x402",
