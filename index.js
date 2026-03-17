@@ -28,12 +28,54 @@ const DEFAULT_DOCTOR_TIMEOUT_MS = 8000;
 const DEFAULT_HISTORY_LIMIT = 20;
 const DEFAULT_CRAWL_PROFILE = "brief";
 const DEFAULT_CRAWL_SCOPE = "domain";
+const DEFAULT_WATCH_INTERVAL = "30s";
+const DEFAULT_WATCH_TIMEOUT = "5m";
+const DEFAULT_PROVIDER_LIMIT = 20;
 const POLYMARKET_SEARCH_URL = "https://gamma-api.polymarket.com/public-search";
+const LLMS_URL = "https://402.bot/llms.txt";
+const LLMS_FULL_URL = "https://402.bot/llms-full.txt";
 const INIT_AGENT_FIRST_PROMPT =
   "Find the best live Base wallet-intelligence or risk API for an autonomous trading agent, show me the top 3 candidates, and tell me the exact next MCP call to make.";
 const DUNE_CLI_INSTALL_COMMAND = "curl -sSfL https://dune.com/cli/install.sh | sh";
 const DUNE_AUTH_COMMAND = "dune auth";
 const DUNE_SKILLS_ADD_COMMAND = "npx skills add duneanalytics/skills";
+const DEFAULT_STAKING_SCORECARD_PROTOCOLS = [
+  "lido",
+  "rocket-pool",
+  "coinbase-wrapped-staked-eth",
+  "ether.fi",
+  "frax-ether",
+  "swell",
+];
+const DEFAULT_LST_RATE_ASSETS = ["wsteth", "reth", "cbeth", "weeth", "sfrxeth", "sweth", "ethx"];
+const COINGECKO_JSON_OUTPUT_COMMANDS = new Set([
+  "price",
+  "markets",
+  "search",
+  "trending",
+  "history",
+  "top-gainers-losers",
+  "watch",
+  "version",
+]);
+const COINGECKO_INTRINSIC_JSON_COMMANDS = new Set(["commands"]);
+const COINGECKO_ALLOWED_COMMANDS = new Set([
+  "auth",
+  "status",
+  "price",
+  "markets",
+  "search",
+  "trending",
+  "history",
+  "top-gainers-losers",
+  "watch",
+  "tui",
+  "commands",
+  "version",
+  "help",
+  "--help",
+  "-h",
+]);
 
 const HTTP_SURFACES = {
   route: { method: "POST", path: "/v1/route" },
@@ -272,6 +314,212 @@ const DUNE_ANALYSIS_OPTION_SPECS = [
   },
 ];
 
+const SWAP_ROUTE_OPTION_SPECS = [
+  {
+    flags: ["--network"],
+    key: "network",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--src-decimals"],
+    key: "srcDecimals",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--dest-decimals"],
+    key: "destDecimals",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--side"],
+    key: "side",
+    parse: parseParaswapSideValue,
+  },
+  {
+    flags: ["--goal"],
+    key: "goal",
+  },
+];
+
+const JUPITER_ROUTE_OPTION_SPECS = [
+  {
+    flags: ["--slippage-bps"],
+    key: "slippageBps",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--swap-mode"],
+    key: "swapMode",
+    parse: parseJupiterSwapModeValue,
+  },
+  {
+    flags: ["--only-direct-routes"],
+    key: "onlyDirectRoutes",
+    type: "boolean",
+  },
+  {
+    flags: ["--restrict-intermediate-tokens"],
+    key: "restrictIntermediateTokens",
+    type: "boolean",
+  },
+  {
+    flags: ["--goal"],
+    key: "goal",
+  },
+];
+
+const STAKING_SCORECARD_OPTION_SPECS = [
+  {
+    flags: ["--protocols"],
+    key: "protocols",
+    parse: parseCommaSeparatedListValue,
+  },
+  {
+    flags: ["--min-tvl", "--min-tvl-usd"],
+    key: "minTvlUsd",
+    parse: parsePositiveNumberValue,
+  },
+  {
+    flags: ["--limit"],
+    key: "limit",
+    parse: parsePositiveIntValue,
+  },
+];
+
+const CEX_DISLOCATION_OPTION_SPECS = [
+  {
+    flags: ["--quote", "--quote-asset"],
+    key: "quoteAsset",
+  },
+  {
+    flags: ["--exchanges"],
+    key: "exchanges",
+    parse: parseCommaSeparatedListValue,
+  },
+  {
+    flags: ["--include-funding"],
+    key: "includeFunding",
+    type: "boolean",
+  },
+  {
+    flags: ["--question"],
+    key: "question",
+  },
+];
+
+const LST_RATE_OPTION_SPECS = [
+  {
+    flags: ["--assets"],
+    key: "assets",
+    parse: parseCommaSeparatedListValue,
+  },
+  {
+    flags: ["--question"],
+    key: "question",
+  },
+];
+
+const LST_PREMIUM_OPTION_SPECS = [
+  {
+    flags: ["--assets"],
+    key: "assets",
+    parse: parseCommaSeparatedListValue,
+  },
+  {
+    flags: ["--protocols"],
+    key: "protocols",
+    parse: parseCommaSeparatedListValue,
+  },
+  {
+    flags: ["--min-tvl", "--min-tvl-usd"],
+    key: "minTvlUsd",
+    parse: parsePositiveNumberValue,
+  },
+  {
+    flags: ["--limit"],
+    key: "limit",
+    parse: parsePositiveIntValue,
+  },
+];
+
+const PARASWAP_VS_JUPITER_OPTION_SPECS = [
+  {
+    flags: ["--paraswap-network"],
+    key: "paraswapNetwork",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--paraswap-src-decimals"],
+    key: "paraswapSrcDecimals",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--paraswap-dest-decimals"],
+    key: "paraswapDestDecimals",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--paraswap-side"],
+    key: "paraswapSide",
+    parse: parseParaswapSideValue,
+  },
+  {
+    flags: ["--jupiter-slippage-bps"],
+    key: "jupiterSlippageBps",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--jupiter-swap-mode"],
+    key: "jupiterSwapMode",
+    parse: parseJupiterSwapModeValue,
+  },
+  {
+    flags: ["--jupiter-only-direct-routes"],
+    key: "jupiterOnlyDirectRoutes",
+    type: "boolean",
+  },
+  {
+    flags: ["--jupiter-restrict-intermediate-tokens"],
+    key: "jupiterRestrictIntermediateTokens",
+    type: "boolean",
+  },
+  {
+    flags: ["--goal"],
+    key: "goal",
+  },
+];
+
+const CROSSCHAIN_EXECUTION_OPTION_SPECS = [
+  {
+    flags: ["--quote", "--quote-asset"],
+    key: "quoteAsset",
+  },
+  {
+    flags: ["--exchanges"],
+    key: "exchanges",
+    parse: parseCommaSeparatedListValue,
+  },
+  {
+    flags: ["--include-funding"],
+    key: "includeFunding",
+    type: "boolean",
+  },
+  {
+    flags: ["--slippage-bps"],
+    key: "slippageBps",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--swap-mode"],
+    key: "swapMode",
+    parse: parseJupiterSwapModeValue,
+  },
+  {
+    flags: ["--goal"],
+    key: "goal",
+  },
+];
+
 const HISTORY_OPTION_SPECS = [
   {
     flags: ["--since"],
@@ -290,6 +538,95 @@ const SPEND_OPTION_SPECS = [
     flags: ["--since"],
     key: "since",
     parse: parseTimeWindowValue,
+  },
+];
+
+const RECIPE_RUN_OPTION_SPECS = [
+  {
+    flags: ["--wait"],
+    key: "wait",
+    type: "boolean",
+  },
+  {
+    flags: ["--open"],
+    key: "open",
+    type: "boolean",
+  },
+  {
+    flags: ["--save"],
+    key: "savePath",
+  },
+  {
+    flags: ["--from-file"],
+    key: "fromFile",
+  },
+];
+
+const PROVIDER_DIRECTORY_OPTION_SPECS = [
+  {
+    flags: ["--limit"],
+    key: "limit",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--recommendation"],
+    key: "recommendation",
+  },
+];
+
+const AG0_SEARCH_OPTION_SPECS = [
+  {
+    flags: ["--limit"],
+    key: "limit",
+    parse: parsePositiveIntValue,
+  },
+  {
+    flags: ["--network"],
+    key: "network",
+  },
+  {
+    flags: ["--agent-id"],
+    key: "agentId",
+  },
+];
+
+const DOCTOR_OPTION_SPECS = [
+  {
+    flags: ["--fix"],
+    key: "fix",
+    type: "boolean",
+  },
+];
+
+const WATCH_OPTION_SPECS = [
+  {
+    flags: ["--interval"],
+    key: "interval",
+    parse: parseTimeWindowValue,
+  },
+  {
+    flags: ["--since"],
+    key: "since",
+    parse: parseTimeWindowValue,
+  },
+  {
+    flags: ["--timeout"],
+    key: "timeout",
+    parse: parseTimeWindowValue,
+  },
+  {
+    flags: ["--once"],
+    key: "once",
+    type: "boolean",
+  },
+  {
+    flags: ["--webhook-url"],
+    key: "webhookUrl",
+  },
+  {
+    flags: ["--exit-on-change"],
+    key: "exitOnChange",
+    type: "boolean",
   },
 ];
 
@@ -371,6 +708,15 @@ function normalizeProxyFetchArgs(args) {
     normalized.push(arg);
   }
   return normalized;
+}
+
+function flagRequiresValue(flag) {
+  return ![
+    "--json",
+    "--json=true",
+    "--json=false",
+    "--post-only",
+  ].includes(flag);
 }
 
 function parseRepeatedFlagValues(args, flagName) {
@@ -657,16 +1003,65 @@ function buildRecipeInvocation(args, env = process.env, cliOptions = {}) {
   const [action, ...rest] = args;
 
   if (action === "run") {
-    const [slug, ...forwarded] = rest;
+    const parsed = parseRecipeRunArgs(rest);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    const [slug, ...trailing] = parsed.positionals;
     if (!slug || slug.startsWith("-")) {
       return { type: "error", message: "recipe run requires a <slug>." };
     }
-    return buildFetchInvocation(
-      `${apiBaseUrl(env)}/v1/recipes/${encodeURIComponent(slug)}/run`,
-      "POST",
-      forwarded,
-      cliOptions,
-    );
+    if (trailing.length > 0) {
+      return { type: "error", message: "recipe run accepts exactly one <slug> positional value." };
+    }
+
+    const advancedRun = parsed.options.wait || parsed.options.open || parsed.options.savePath || parsed.options.fromFile;
+    if (!advancedRun) {
+      return buildFetchInvocation(
+        `${apiBaseUrl(env)}/v1/recipes/${encodeURIComponent(slug)}/run`,
+        "POST",
+        rest.slice(1),
+        cliOptions,
+      );
+    }
+
+    return withJsonOutput({
+      type: "local",
+      action: "recipe_run",
+      baseUrl: apiBaseUrl(env),
+      slug,
+      forwardedArgs: parsed.forwardedArgs,
+      wait: Boolean(parsed.options.wait),
+      open: Boolean(parsed.options.open),
+      savePath: parsed.options.savePath ?? null,
+      fromFile: parsed.options.fromFile ?? null,
+    }, cliOptions.jsonOutput);
+  }
+
+  if (action === "inspect") {
+    const slug = rest[0];
+    if (!slug || slug.startsWith("-") || rest.length !== 1) {
+      return { type: "error", message: "Usage: 402bot recipe inspect <slug>" };
+    }
+    return withJsonOutput(buildHttpInvocation(
+      `${apiBaseUrl(env)}/v1/recipes/${encodeURIComponent(slug)}`,
+      "GET",
+      "recipe_detail",
+      { slug },
+    ), cliOptions.jsonOutput);
+  }
+
+  if (action === "recommend") {
+    const goal = joinPositionals(rest);
+    if (!goal) {
+      return { type: "error", message: 'Usage: 402bot recipe recommend "<goal>"' };
+    }
+    return withJsonOutput({
+      type: "local",
+      action: "recipe_recommend",
+      baseUrl: apiBaseUrl(env),
+      goal,
+    }, cliOptions.jsonOutput);
   }
 
   if (action === "list") {
@@ -722,8 +1117,236 @@ function buildRecipeInvocation(args, env = process.env, cliOptions = {}) {
 
   return {
     type: "error",
-    message: "Usage: 402bot recipe <run|list|search> ...",
+    message: "Usage: 402bot recipe <run|list|search|inspect|recommend> ...",
   };
+}
+
+function buildProvidersInvocation(args, env = process.env, cliOptions = {}) {
+  const [action, ...rest] = args;
+
+  if (action === "inspect") {
+    const slug = rest[0];
+    if (!slug || slug.startsWith("-") || rest.length !== 1) {
+      return { type: "error", message: "Usage: 402bot providers inspect <slug>" };
+    }
+    return withJsonOutput(buildHttpInvocation(
+      `${apiBaseUrl(env)}/v1/providers/${encodeURIComponent(slug)}`,
+      "GET",
+      "provider_detail",
+      { slug },
+    ), cliOptions.jsonOutput);
+  }
+
+  if (action === "list" || action === "search") {
+    const parsed = parseOptionArgs(rest, PROVIDER_DIRECTORY_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    const query = action === "search" ? joinPositionals(parsed.positionals) : null;
+    if (action === "search" && !query) {
+      return { type: "error", message: 'Usage: 402bot providers search "<query>" [--limit ...]' };
+    }
+    if (action === "list" && parsed.positionals.length > 0) {
+      return { type: "error", message: "providers list does not take positional arguments." };
+    }
+    return withJsonOutput({
+      type: "local",
+      action: "providers_directory",
+      baseUrl: apiBaseUrl(env),
+      mode: action,
+      query,
+      limit: parsed.options.limit ?? DEFAULT_PROVIDER_LIMIT,
+      recommendation: parsed.options.recommendation ?? null,
+    }, cliOptions.jsonOutput);
+  }
+
+  return {
+    type: "error",
+    message: "Usage: 402bot providers <list|search|inspect> ...",
+  };
+}
+
+function buildMarketInvocation(args, env = process.env, cliOptions = {}) {
+  const [action, ...rest] = args;
+  if (!action) {
+    return {
+      type: "error",
+      message:
+        "Usage: 402bot market <doctor|price|markets|search|trending|history|top-gainers-losers|watch|tui|commands|status|auth|version> ...",
+    };
+  }
+
+  if (action === "doctor") {
+    if (rest.length > 0) {
+      return { type: "error", message: "market doctor does not take positional arguments." };
+    }
+    return withJsonOutput({
+      type: "local",
+      action: "market_doctor",
+      command: resolveCoinGeckoCliCommand(env),
+    }, cliOptions.jsonOutput);
+  }
+
+  if (!COINGECKO_ALLOWED_COMMANDS.has(action)) {
+    return {
+      type: "error",
+      message:
+        "Usage: 402bot market <doctor|price|markets|search|trending|history|top-gainers-losers|watch|tui|commands|status|auth|version> ...",
+    };
+  }
+
+  if (action === "tui" && cliOptions.jsonOutput) {
+    return { type: "error", message: "market tui does not support --json." };
+  }
+
+  return withJsonOutput({
+    type: "local",
+    action: "market_passthrough",
+    command: resolveCoinGeckoCliCommand(env),
+    marketAction: action,
+    forwardedArgs: [action, ...rest],
+  }, cliOptions.jsonOutput);
+}
+
+function buildAg0Invocation(args, env = process.env, cliOptions = {}) {
+  const [action, ...rest] = args;
+
+  if (action === "search") {
+    const parsed = parseOptionArgs(rest, AG0_SEARCH_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    const capability = joinPositionals(parsed.positionals);
+    if (!capability && !parsed.options.agentId) {
+      return { type: "error", message: 'Usage: 402bot ag0 search "<capability>" [--network ...] [--limit ...] [--agent-id ...]' };
+    }
+
+    return withJsonOutput(buildHttpInvocation(
+      buildUrlWithQuery(`${apiBaseUrl(env)}/v1/ag0/search`, {
+        capability: capability || undefined,
+        network: parsed.options.network,
+        limit: parsed.options.limit ?? DEFAULT_PROVIDER_LIMIT,
+        agentId: parsed.options.agentId,
+      }),
+      "GET",
+      "ag0_search",
+      { capability, agentId: parsed.options.agentId ?? null },
+    ), cliOptions.jsonOutput);
+  }
+
+  if (action === "inspect") {
+    const agentId = rest[0];
+    if (!agentId || agentId.startsWith("-") || rest.length !== 1) {
+      return { type: "error", message: "Usage: 402bot ag0 inspect <agent-id>" };
+    }
+    return withJsonOutput(buildHttpInvocation(
+      `${apiBaseUrl(env)}/v1/ag0/inspect/${encodeURIComponent(agentId)}`,
+      "GET",
+      "ag0_inspect",
+      { agentId },
+    ), cliOptions.jsonOutput);
+  }
+
+  if (action === "dossier") {
+    const agentId = rest[0];
+    if (!agentId || agentId.startsWith("-") || rest.length !== 1) {
+      return { type: "error", message: "Usage: 402bot ag0 dossier <agent-id>" };
+    }
+    return withJsonOutput(buildHttpInvocation(
+      `${apiBaseUrl(env)}/v1/ag0/dossier/${encodeURIComponent(agentId)}`,
+      "GET",
+      "ag0_dossier",
+      { agentId },
+    ), cliOptions.jsonOutput);
+  }
+
+  return {
+    type: "error",
+    message: "Usage: 402bot ag0 <search|inspect|dossier> ...",
+  };
+}
+
+function buildCatalogInvocation(args, env = process.env, cliOptions = {}) {
+  const [action, ...rest] = args;
+  if (action !== "update" || rest.length > 0) {
+    return { type: "error", message: "Usage: 402bot catalog update" };
+  }
+  return withJsonOutput({
+    type: "local",
+    action: "catalog_update",
+    baseUrl: apiBaseUrl(env),
+  }, cliOptions.jsonOutput);
+}
+
+function buildWatchInvocation(args, env = process.env, cliOptions = {}) {
+  const [targetType, ...rest] = args;
+  if (!["wallet", "endpoint", "provider"].includes(targetType)) {
+    return { type: "error", message: "Usage: 402bot watch <wallet|endpoint|provider> <target> [--interval ...] [--since ...] [--timeout ...] [--once] [--webhook-url ...]" };
+  }
+
+  const parsed = parseOptionArgs(rest, WATCH_OPTION_SPECS);
+  if (!parsed.ok) {
+    return { type: "error", message: parsed.message };
+  }
+  if (parsed.positionals.length !== 1) {
+    return { type: "error", message: `watch ${targetType} requires exactly one target value.` };
+  }
+
+  return withJsonOutput({
+    type: "local",
+    action: "watch",
+    baseUrl: apiBaseUrl(env),
+    targetType,
+    targetValue: parsed.positionals[0],
+    interval: parsed.options.interval ?? DEFAULT_WATCH_INTERVAL,
+    since: parsed.options.since ?? null,
+    timeout: parsed.options.timeout ?? DEFAULT_WATCH_TIMEOUT,
+    once: Boolean(parsed.options.once),
+    webhookUrl: parsed.options.webhookUrl ?? null,
+    exitOnChange: Boolean(parsed.options.exitOnChange),
+  }, cliOptions.jsonOutput);
+}
+
+function buildExportInvocation(args, env = process.env, cliOptions = {}) {
+  const [target, value] = args;
+  if (target === "openapi") {
+    if (args.length > 1) {
+      return { type: "error", message: "Usage: 402bot export openapi" };
+    }
+    return withJsonOutput({
+      type: "local",
+      action: "export_openapi",
+      baseUrl: apiBaseUrl(env),
+      mcpUrl: mcpBaseUrl(env),
+    }, cliOptions.jsonOutput);
+  }
+
+  if (target === "mcp-config") {
+    const client = value ?? "all";
+    if (!["all", "claude", "claude-code", "cursor", "codex", "gemini"].includes(client)) {
+      return { type: "error", message: `Unknown mcp-config target: ${client}` };
+    }
+    return withJsonOutput({
+      type: "local",
+      action: "export_mcp_config",
+      client,
+      baseUrl: apiBaseUrl(env),
+      remoteMcpBaseUrl: mcpBaseUrl(env),
+    }, cliOptions.jsonOutput);
+  }
+
+  return { type: "error", message: "Usage: 402bot export <mcp-config|openapi> ..." };
+}
+
+function buildChangelogInvocation(args, env = process.env, cliOptions = {}) {
+  if (args.length > 0) {
+    return { type: "error", message: "changelog does not take positional arguments." };
+  }
+  return withJsonOutput({
+    type: "local",
+    action: "changelog",
+    baseUrl: apiBaseUrl(env),
+  }, cliOptions.jsonOutput);
 }
 
 function buildWalletInvocation(args, env = process.env, cliOptions = {}) {
@@ -907,11 +1530,26 @@ function buildInitInvocation(args, env = process.env, cliOptions = {}) {
     }, cliOptions.jsonOutput);
   }
 
+  if (target === "automation") {
+    const scaffoldTarget = rest[0] ?? "github-actions";
+    if (!["github-actions", "codex"].includes(scaffoldTarget)) {
+      return { type: "error", message: `Unknown init automation target: ${scaffoldTarget}` };
+    }
+    return withJsonOutput({
+      type: "local",
+      action: "init_automation",
+      scaffoldTarget,
+      baseUrl: apiBaseUrl(env),
+      remoteMcpBaseUrl: mcpBaseUrl(env),
+    }, cliOptions.jsonOutput);
+  }
+
   return {
     type: "error",
     message:
       "Usage: 402bot init agent [claude|claude-code|cursor|codex|gemini|all] [--campaign-id ...]\n" +
-      "   or: 402bot init dune [claude-code|cursor|codex|all]",
+      "   or: 402bot init dune [claude-code|cursor|codex|all]\n" +
+      "   or: 402bot init automation [github-actions|codex]",
   };
 }
 
@@ -920,7 +1558,8 @@ function buildRunInvocation(args, env = process.env, cliOptions = {}) {
   if (!workflow) {
     return {
       type: "error",
-      message: "Usage: 402bot run <wallet-research|protocol-diligence|market-briefing|dune-analysis> ...",
+      message:
+        "Usage: 402bot run <wallet-research|protocol-diligence|market-briefing|dune-analysis|swap-route|jupiter-route|staking-scorecard|lst-rates|lst-premium|cex-dislocation|paraswap-vs-jupiter|crosschain-execution> ...",
     };
   }
 
@@ -1010,11 +1649,260 @@ function buildRunInvocation(args, env = process.env, cliOptions = {}) {
     );
   }
 
+  if (workflow === "swap-route") {
+    const parsed = parseOptionArgs(rest, SWAP_ROUTE_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    if (parsed.positionals.length !== 3 || parsed.options.srcDecimals === undefined || parsed.options.destDecimals === undefined) {
+      return {
+        type: "error",
+        message:
+          "Usage: 402bot run swap-route <src-token> <dest-token> <amount> --src-decimals <n> --dest-decimals <n> [--network ...] [--side BUY|SELL] [--goal ...]",
+      };
+    }
+
+    return buildRecipeRunFromInput(
+      "paraswap-route-brief",
+      {
+        srcToken: parsed.positionals[0],
+        destToken: parsed.positionals[1],
+        amount: parsed.positionals[2],
+        srcDecimals: parsed.options.srcDecimals,
+        destDecimals: parsed.options.destDecimals,
+        ...(parsed.options.network === undefined ? {} : { network: parsed.options.network }),
+        ...(parsed.options.side === undefined ? {} : { side: parsed.options.side }),
+        ...(parsed.options.goal === undefined ? {} : { goal: parsed.options.goal }),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
+  if (workflow === "jupiter-route") {
+    const parsed = parseOptionArgs(rest, JUPITER_ROUTE_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    if (parsed.positionals.length !== 3) {
+      return {
+        type: "error",
+        message:
+          "Usage: 402bot run jupiter-route <input-mint> <output-mint> <amount> [--slippage-bps ...] [--swap-mode ExactIn|ExactOut] [--only-direct-routes] [--restrict-intermediate-tokens] [--goal ...]",
+      };
+    }
+
+    return buildRecipeRunFromInput(
+      "jupiter-route-brief",
+      {
+        inputMint: parsed.positionals[0],
+        outputMint: parsed.positionals[1],
+        amount: parsed.positionals[2],
+        ...(parsed.options.slippageBps === undefined ? {} : { slippageBps: parsed.options.slippageBps }),
+        ...(parsed.options.swapMode === undefined ? {} : { swapMode: parsed.options.swapMode }),
+        ...(parsed.options.onlyDirectRoutes === undefined ? {} : { onlyDirectRoutes: parsed.options.onlyDirectRoutes }),
+        ...(parsed.options.restrictIntermediateTokens === undefined
+          ? {}
+          : { restrictIntermediateTokens: parsed.options.restrictIntermediateTokens }),
+        ...(parsed.options.goal === undefined ? {} : { goal: parsed.options.goal }),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
+  if (workflow === "staking-scorecard") {
+    const parsed = parseOptionArgs(rest, STAKING_SCORECARD_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+
+    const goal = joinPositionals(parsed.positionals);
+    if (!goal) {
+      return {
+        type: "error",
+        message: 'Usage: 402bot run staking-scorecard "<goal>" [--protocols ...] [--min-tvl ...] [--limit ...]',
+      };
+    }
+
+    return buildRecipeRunFromInput(
+      "liquid-staking-scorecard",
+      {
+        goal,
+        protocols: parsed.options.protocols ?? DEFAULT_STAKING_SCORECARD_PROTOCOLS,
+        ...(parsed.options.minTvlUsd === undefined ? {} : { minTvlUsd: parsed.options.minTvlUsd }),
+        ...(parsed.options.limit === undefined ? {} : { limit: parsed.options.limit }),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
+  if (workflow === "lst-rates") {
+    const parsed = parseOptionArgs(rest, LST_RATE_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+
+    const question = parsed.options.question ?? joinPositionals(parsed.positionals);
+    return buildRecipeRunFromInput(
+      "lst-exchange-rate-watch",
+      {
+        ...(parsed.options.assets === undefined ? { assets: DEFAULT_LST_RATE_ASSETS } : { assets: parsed.options.assets }),
+        ...(question ? { question } : {}),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
+  if (workflow === "lst-premium") {
+    const parsed = parseOptionArgs(rest, LST_PREMIUM_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+
+    const goal = joinPositionals(parsed.positionals);
+    if (!goal) {
+      return {
+        type: "error",
+        message: 'Usage: 402bot run lst-premium "<goal>" [--assets ...] [--protocols ...] [--min-tvl ...] [--limit ...]',
+      };
+    }
+
+    return buildRecipeRunFromInput(
+      "lst-premium-vs-yield-brief",
+      {
+        goal,
+        ...(parsed.options.assets === undefined ? { assets: DEFAULT_LST_RATE_ASSETS } : { assets: parsed.options.assets }),
+        ...(parsed.options.protocols === undefined
+          ? { protocols: DEFAULT_STAKING_SCORECARD_PROTOCOLS }
+          : { protocols: parsed.options.protocols }),
+        ...(parsed.options.minTvlUsd === undefined ? {} : { minTvlUsd: parsed.options.minTvlUsd }),
+        ...(parsed.options.limit === undefined ? {} : { limit: parsed.options.limit }),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
+  if (workflow === "cex-dislocation") {
+    const parsed = parseOptionArgs(rest, CEX_DISLOCATION_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    if (parsed.positionals.length !== 1) {
+      return {
+        type: "error",
+        message:
+          "Usage: 402bot run cex-dislocation <base-asset> [--quote-asset ...] [--exchanges ...] [--include-funding] [--question ...]",
+      };
+    }
+
+    return buildRecipeRunFromInput(
+      "cex-dislocation-watch",
+      {
+        baseAsset: parsed.positionals[0],
+        ...(parsed.options.quoteAsset === undefined ? {} : { quoteAsset: parsed.options.quoteAsset }),
+        ...(parsed.options.exchanges === undefined ? {} : { exchanges: parsed.options.exchanges }),
+        ...(parsed.options.includeFunding === undefined ? {} : { includeFunding: parsed.options.includeFunding }),
+        ...(parsed.options.question === undefined ? {} : { question: parsed.options.question }),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
+  if (workflow === "crosschain-execution") {
+    const parsed = parseOptionArgs(rest, CROSSCHAIN_EXECUTION_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    if (parsed.positionals.length !== 4) {
+      return {
+        type: "error",
+        message:
+          "Usage: 402bot run crosschain-execution <solana-input-query> <solana-output-query> <solana-amount> <cex-base-asset> [--quote-asset ...] [--exchanges ...] [--include-funding] [--slippage-bps ...] [--swap-mode ExactIn|ExactOut] [--goal ...]",
+      };
+    }
+
+    return buildRecipeRunFromInput(
+      "crosschain-execution-board",
+      {
+        solana: {
+          inputQuery: parsed.positionals[0],
+          outputQuery: parsed.positionals[1],
+          amount: parsed.positionals[2],
+          ...(parsed.options.slippageBps === undefined ? {} : { slippageBps: parsed.options.slippageBps }),
+          ...(parsed.options.swapMode === undefined ? {} : { swapMode: parsed.options.swapMode }),
+        },
+        cex: {
+          baseAsset: parsed.positionals[3],
+          ...(parsed.options.quoteAsset === undefined ? {} : { quoteAsset: parsed.options.quoteAsset }),
+          ...(parsed.options.exchanges === undefined ? {} : { exchanges: parsed.options.exchanges }),
+          ...(parsed.options.includeFunding === undefined ? {} : { includeFunding: parsed.options.includeFunding }),
+        },
+        ...(parsed.options.goal === undefined ? {} : { goal: parsed.options.goal }),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
+  if (workflow === "paraswap-vs-jupiter") {
+    const parsed = parseOptionArgs(rest, PARASWAP_VS_JUPITER_OPTION_SPECS);
+    if (!parsed.ok) {
+      return { type: "error", message: parsed.message };
+    }
+    if (
+      parsed.positionals.length !== 6 ||
+      parsed.options.paraswapSrcDecimals === undefined ||
+      parsed.options.paraswapDestDecimals === undefined
+    ) {
+      return {
+        type: "error",
+        message:
+          "Usage: 402bot run paraswap-vs-jupiter <paraswap-src-token> <paraswap-dest-token> <paraswap-amount> <jupiter-input-mint> <jupiter-output-mint> <jupiter-amount> --paraswap-src-decimals <n> --paraswap-dest-decimals <n> [--paraswap-network ...] [--paraswap-side BUY|SELL] [--jupiter-slippage-bps ...] [--jupiter-swap-mode ExactIn|ExactOut] [--jupiter-only-direct-routes] [--jupiter-restrict-intermediate-tokens] [--goal ...]",
+      };
+    }
+
+    return buildRecipeRunFromInput(
+      "paraswap-vs-jupiter-execution-brief",
+      {
+        paraswap: {
+          srcToken: parsed.positionals[0],
+          destToken: parsed.positionals[1],
+          amount: parsed.positionals[2],
+          srcDecimals: parsed.options.paraswapSrcDecimals,
+          destDecimals: parsed.options.paraswapDestDecimals,
+          ...(parsed.options.paraswapNetwork === undefined ? {} : { network: parsed.options.paraswapNetwork }),
+          ...(parsed.options.paraswapSide === undefined ? {} : { side: parsed.options.paraswapSide }),
+        },
+        jupiter: {
+          inputMint: parsed.positionals[3],
+          outputMint: parsed.positionals[4],
+          amount: parsed.positionals[5],
+          ...(parsed.options.jupiterSlippageBps === undefined ? {} : { slippageBps: parsed.options.jupiterSlippageBps }),
+          ...(parsed.options.jupiterSwapMode === undefined ? {} : { swapMode: parsed.options.jupiterSwapMode }),
+          ...(parsed.options.jupiterOnlyDirectRoutes === undefined
+            ? {}
+            : { onlyDirectRoutes: parsed.options.jupiterOnlyDirectRoutes }),
+          ...(parsed.options.jupiterRestrictIntermediateTokens === undefined
+            ? {}
+            : { restrictIntermediateTokens: parsed.options.jupiterRestrictIntermediateTokens }),
+        },
+        ...(parsed.options.goal === undefined ? {} : { goal: parsed.options.goal }),
+      },
+      env,
+      cliOptions,
+    );
+  }
+
   return {
     type: "error",
     message:
       `Unknown workflow: ${workflow}\n` +
-      "Supported workflows: wallet-research, protocol-diligence, market-briefing, dune-analysis",
+      "Supported workflows: wallet-research, protocol-diligence, market-briefing, dune-analysis, swap-route, staking-scorecard, cex-dislocation",
   };
 }
 
@@ -1065,13 +1953,18 @@ function buildConfigInvocation(args, cliOptions = {}) {
 }
 
 function buildDoctorInvocation(args, cliOptions = {}) {
-  if (args.length > 0) {
+  const parsed = parseOptionArgs(args, DOCTOR_OPTION_SPECS);
+  if (!parsed.ok) {
+    return { type: "error", message: parsed.message };
+  }
+  if (parsed.positionals.length > 0) {
     return { type: "error", message: "doctor does not take positional arguments." };
   }
 
   return withJsonOutput({
     type: "local",
     action: "doctor",
+    fix: Boolean(parsed.options.fix),
   }, cliOptions.jsonOutput);
 }
 
@@ -1339,6 +2232,65 @@ function buildInitDuneText(payload) {
   return sections.join("\n");
 }
 
+function buildInitAutomationPayload(invocation) {
+  if (invocation.scaffoldTarget === "github-actions") {
+    return {
+      schema: "402bot/init-automation/v1",
+      target: "github-actions",
+      title: "GitHub Actions automation scaffold",
+      template: `name: Scheduled 402bot recipe run
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  run-recipe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: npx 402bot recipe run <recipe-slug> --from-file .github/402bot-input.json --wait --save output/recipe.json
+        env:
+          BOT402_API_URL: ${invocation.baseUrl}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 402bot-recipe-output
+          path: output/recipe.json`,
+    };
+  }
+
+  return {
+    schema: "402bot/init-automation/v1",
+    target: "codex",
+    title: "Codex automation scaffold",
+    template: `::automation-update{mode="suggested create" name="402bot recipe run" prompt="Run the selected 402bot recipe, wait for completion, and summarize the result." rrule="FREQ=HOURLY;INTERVAL=1" cwds="${process.cwd()}" status="ACTIVE"}`,
+  };
+}
+
+function buildOpenApiExportPayload(invocation) {
+  const paths = Object.entries(HTTP_SURFACES).map(([operationId, value]) => ({
+    operationId,
+    method: value.method,
+    path: value.path,
+  }));
+
+  paths.push(
+    { operationId: "recipe_detail", method: "GET", path: "/v1/recipes/{slug}" },
+    { operationId: "provider_directory", method: "GET", path: "/v1/providers" },
+    { operationId: "provider_detail", method: "GET", path: "/v1/providers/{slug}" },
+  );
+
+  return {
+    schema: "402bot/export-openapi/v1",
+    baseUrl: invocation.baseUrl,
+    mcpUrl: invocation.mcpUrl,
+    paths,
+  };
+}
+
 function buildCompletionPayload(shell) {
   return {
     schema: "402bot/completion/v1",
@@ -1353,12 +2305,13 @@ _402bot() {
   local cur prev words cword
   _init_completion -n : || return
 
-  local commands="setup status wallet config doctor spend history completion mcp discover inspect compare recipe docs trade polymarket init prompt plan run route route-probe transform fetch-transform fetch-sources materialize recipes"
+  local commands="setup status wallet config doctor spend history completion mcp discover inspect compare recipe providers market catalog watch export changelog whats-new docs trade polymarket init prompt plan run route route-probe transform fetch-transform fetch-sources materialize recipes"
   local config_keys="campaign-id network spend-cap spend-cap-per-tx favorite-wallet favorite-recipe"
   local shells="bash zsh"
   local wallet_profiles="wallet treasury defi-risk prediction-markets counterparty-map polymarket"
   local docs_profiles="brief audit integration-notes"
   local docs_scopes="page domain subdomains"
+  local market_actions="doctor auth status price markets search trending history top-gainers-losers watch tui commands version"
 
   if [[ $cword -eq 1 ]]; then
     COMPREPLY=( $(compgen -W "$commands" -- "$cur") )
@@ -1387,7 +2340,32 @@ _402bot() {
       ;;
     recipe)
       if [[ $cword -eq 2 ]]; then
-        COMPREPLY=( $(compgen -W "run list search" -- "$cur") )
+        COMPREPLY=( $(compgen -W "run list search inspect recommend" -- "$cur") )
+      fi
+      ;;
+    providers)
+      if [[ $cword -eq 2 ]]; then
+        COMPREPLY=( $(compgen -W "list search inspect" -- "$cur") )
+      fi
+      ;;
+    market)
+      if [[ $cword -eq 2 ]]; then
+        COMPREPLY=( $(compgen -W "$market_actions" -- "$cur") )
+      fi
+      ;;
+    catalog)
+      if [[ $cword -eq 2 ]]; then
+        COMPREPLY=( $(compgen -W "update" -- "$cur") )
+      fi
+      ;;
+    watch)
+      if [[ $cword -eq 2 ]]; then
+        COMPREPLY=( $(compgen -W "wallet endpoint provider" -- "$cur") )
+      fi
+      ;;
+    export)
+      if [[ $cword -eq 2 ]]; then
+        COMPREPLY=( $(compgen -W "mcp-config openapi" -- "$cur") )
       fi
       ;;
     docs)
@@ -1407,18 +2385,20 @@ _402bot() {
       ;;
     init)
       if [[ $cword -eq 2 ]]; then
-        COMPREPLY=( $(compgen -W "agent dune" -- "$cur") )
+        COMPREPLY=( $(compgen -W "agent dune automation" -- "$cur") )
       elif [[ $cword -eq 3 ]]; then
         if [[ \${words[2]} == "agent" ]]; then
           COMPREPLY=( $(compgen -W "all claude claude-code cursor codex gemini" -- "$cur") )
         elif [[ \${words[2]} == "dune" ]]; then
           COMPREPLY=( $(compgen -W "all claude-code cursor codex" -- "$cur") )
+        elif [[ \${words[2]} == "automation" ]]; then
+          COMPREPLY=( $(compgen -W "github-actions codex" -- "$cur") )
         fi
       fi
       ;;
     run)
       if [[ $cword -eq 2 ]]; then
-        COMPREPLY=( $(compgen -W "wallet-research protocol-diligence market-briefing dune-analysis" -- "$cur") )
+        COMPREPLY=( $(compgen -W "wallet-research protocol-diligence market-briefing dune-analysis swap-route jupiter-route staking-scorecard lst-rates lst-premium cex-dislocation paraswap-vs-jupiter crosschain-execution" -- "$cur") )
       fi
       ;;
   esac
@@ -1445,6 +2425,13 @@ commands=(
   'inspect:inspect an endpoint or agent'
   'compare:compare a shortlist for a goal'
   'recipe:list search or run recipes'
+  'providers:list search or inspect providers'
+  'market:delegate CoinGecko CLI market commands'
+  'catalog:update local catalog snapshots'
+  'watch:poll wallet, endpoint, or provider state'
+  'export:print integration exports'
+  'changelog:compare cached and live catalog state'
+  'whats-new:alias for changelog'
   'docs:run docs crawl wrappers'
   'trade:trade wrappers'
   'polymarket:polymarket analytics or raw orders'
@@ -1487,7 +2474,45 @@ case "$words[2]" in
     ;;
   recipe)
     if (( CURRENT == 3 )); then
-      _describe 'recipe action' 'run:run a recipe' 'list:list recipes' 'search:search recipes'
+      _describe 'recipe action' 'run:run a recipe' 'list:list recipes' 'search:search recipes' 'inspect:inspect one recipe' 'recommend:recommend recipes'
+    fi
+    ;;
+  providers)
+    if (( CURRENT == 3 )); then
+      _describe 'provider action' 'list:list providers' 'search:search providers' 'inspect:inspect one provider'
+    fi
+    ;;
+  market)
+    if (( CURRENT == 3 )); then
+      _describe 'market action' \
+        'doctor:check local CoinGecko CLI availability' \
+        'auth:configure CoinGecko CLI auth' \
+        'status:show CoinGecko auth status' \
+        'price:get live prices' \
+        'markets:list top market-cap coins' \
+        'search:search coins' \
+        'trending:show trending coins, nfts, and categories' \
+        'history:get historical coin data' \
+        'top-gainers-losers:show top movers' \
+        'watch:stream live prices' \
+        'tui:launch CoinGecko terminal UI' \
+        'commands:print CoinGecko machine-readable command catalog' \
+        'version:print CoinGecko CLI version'
+    fi
+    ;;
+  catalog)
+    if (( CURRENT == 3 )); then
+      _describe 'catalog action' 'update:refresh cached catalog data'
+    fi
+    ;;
+  watch)
+    if (( CURRENT == 3 )); then
+      _describe 'watch target' 'wallet:watch a wallet' 'endpoint:watch an endpoint' 'provider:watch a provider'
+    fi
+    ;;
+  export)
+    if (( CURRENT == 3 )); then
+      _describe 'export target' 'mcp-config:print MCP client config' 'openapi:print public HTTP surface map'
     fi
     ;;
   docs)
@@ -1502,7 +2527,7 @@ case "$words[2]" in
     ;;
   init)
     if (( CURRENT == 3 )); then
-      _describe 'init target' 'agent:print agent snippets' 'dune:print Dune setup snippets'
+      _describe 'init target' 'agent:print agent snippets' 'dune:print Dune setup snippets' 'automation:print automation scaffolds'
     elif (( CURRENT == 4 )); then
       if [[ "$words[3]" == "agent" ]]; then
         _describe 'agent client' \
@@ -1518,6 +2543,10 @@ case "$words[2]" in
           'claude-code:Claude Code' \
           'cursor:Cursor' \
           'codex:Codex CLI'
+      elif [[ "$words[3]" == "automation" ]]; then
+        _describe 'automation scaffold' \
+          'github-actions:scheduled GitHub Actions workflow' \
+          'codex:Codex automation scaffold'
       fi
     fi
     ;;
@@ -1527,7 +2556,15 @@ case "$words[2]" in
         'wallet-research:wallet dossier brief' \
         'protocol-diligence:protocol diligence pack' \
         'market-briefing:prediction market radar' \
-        'dune-analysis:Dune onchain brief'
+        'dune-analysis:Dune onchain brief' \
+        'swap-route:ParaSwap route brief' \
+        'jupiter-route:Jupiter route brief' \
+        'staking-scorecard:liquid staking scorecard' \
+        'lst-rates:LST exchange-rate watch' \
+        'lst-premium:LST premium vs yield brief' \
+        'cex-dislocation:CEX dislocation watch' \
+        'paraswap-vs-jupiter:cross-venue execution brief' \
+        'crosschain-execution:Jupiter plus CEX execution board'
     fi
     ;;
 esac`;
@@ -1631,8 +2668,26 @@ export function buildUsage() {
     '  402bot compare "find the best live Base weather or risk API for a DeFi agent"',
     "  402bot recipe list",
     '  402bot recipe search "polymarket"',
+    "  402bot recipe inspect dune-onchain-brief",
+    '  402bot recipe recommend "best treasury watch workflow"',
+    "  402bot providers list",
+    '  402bot providers search "dune"',
+    "  402bot providers inspect dune",
+    "  402bot market doctor",
+    "  402bot market price --ids bitcoin",
+    "  402bot --json market markets --category layer-2 --total 25",
+    "  402bot market commands",
+    '  402bot ag0 search "wallet-risk"',
+    "  402bot ag0 inspect 42",
+    "  402bot ag0 dossier 42",
+    "  402bot catalog update",
+    "  402bot recipes sync",
+    "  402bot changelog",
     '  402bot prompt "find the best live Base treasury monitoring API"',
     '  402bot plan "monitor this wallet for treasury and prediction-market risk"',
+    "  402bot watch provider dune --once",
+    "  402bot export mcp-config codex",
+    "  402bot export openapi",
     "  402bot discover ... --json",
     "  402bot inspect ... --json",
     "  402bot compare ... --json",
@@ -1646,17 +2701,29 @@ export function buildUsage() {
     "  402bot run protocol-diligence https://docs.uniswap.org --question 'What are the obvious diligence gaps?'",
     '  402bot run market-briefing "Polymarket election odds"',
     '  402bot run dune-analysis "Which contracts paid the most gas on Base over the last 7 days?" --chain base --days 7',
+    "  402bot run swap-route 0x4200000000000000000000000000000000000006 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913 1000000000000000000 --src-decimals 18 --dest-decimals 6 --network 8453",
+    "  402bot run jupiter-route So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000000 --slippage-bps 50",
+    '  402bot run staking-scorecard "Compare liquid staking options for a conservative ETH treasury"',
+    "  402bot run lst-rates --assets wsteth,reth,cbeth,weeth,sfrxeth --question 'Which LST exchange rates deserve monitoring?'",
+    '  402bot run lst-premium "Which ETH LSTs look mature enough for treasury collateral?" --assets wsteth,reth,cbeth,weeth,sfrxeth',
+    "  402bot run cex-dislocation BTC --quote-asset USDT --include-funding",
+    "  402bot run paraswap-vs-jupiter 0x4200000000000000000000000000000000000006 0x833589fcd6edb6e08f4c7c32d4f71b54bda02913 1000000000000000000 So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000000 --paraswap-src-decimals 18 --paraswap-dest-decimals 6",
+    "  402bot run crosschain-execution SOL USDC 1000000000 SOL --quote-asset USDT --include-funding",
     '  402bot recipe run wallet-intel-brief --body \'{"input":{"walletAddress":"0x..."}}\'',
+    '  402bot recipe run wallet-intel-brief --from-file ./input.json --wait --save ./output.json',
     '  402bot fetch-transform --body \'{"sourceId":"cloudflare_crawl","params":{"url":"https://docs.uniswap.org"}}\'',
     "",
     "Agent setup:",
     "  402bot init agent",
     "  402bot init agent codex --campaign-id codex-mcp-setup",
     "  402bot init dune codex",
+    "  402bot init automation github-actions",
+    "  402bot doctor --fix",
     "",
     "Environment:",
     `  BOT402_API_URL defaults to ${DEFAULT_API_BASE_URL}`,
     `  BOT402_MCP_URL defaults to ${DEFAULT_MCP_URL}`,
+    "  BOT402_CG_BIN can override the local CoinGecko CLI binary path",
     `  DUNE_API_KEY configures direct Dune installs for ${DEFAULT_DUNE_MCP_URL}`,
     "",
     "This CLI delegates wallet setup, payment handling, and payment settlement to x402-proxy.",
@@ -1726,6 +2793,34 @@ export function buildProxyInvocation(argv, env = process.env) {
     return buildRecipeInvocation(rest, env, cliOptions);
   }
 
+  if (command === "providers") {
+    return buildProvidersInvocation(rest, env, cliOptions);
+  }
+
+  if (command === "market") {
+    return buildMarketInvocation(rest, env, cliOptions);
+  }
+
+  if (command === "ag0") {
+    return buildAg0Invocation(rest, env, cliOptions);
+  }
+
+  if (command === "catalog") {
+    return buildCatalogInvocation(rest, env, cliOptions);
+  }
+
+  if (command === "watch") {
+    return buildWatchInvocation(rest, env, cliOptions);
+  }
+
+  if (command === "export") {
+    return buildExportInvocation(rest, env, cliOptions);
+  }
+
+  if (command === "changelog" || command === "whats-new") {
+    return buildChangelogInvocation(rest, env, cliOptions);
+  }
+
   if (command === "docs") {
     return buildDocsInvocation(rest, env, cliOptions);
   }
@@ -1752,6 +2847,10 @@ export function buildProxyInvocation(argv, env = process.env) {
 
   if (command === "polymarket") {
     return buildPolymarketInvocation(rest, env, cliOptions);
+  }
+
+  if (command === "recipes" && rest[0] === "sync") {
+    return buildCatalogInvocation(["update"], env, cliOptions);
   }
 
   const surface = HTTP_SURFACES[command];
@@ -1790,6 +2889,74 @@ function resolveProxyBin() {
     args: [],
     source: "path",
   };
+}
+
+function resolveCoinGeckoCliCommand(env = process.env) {
+  const configured = env.BOT402_CG_BIN?.trim();
+  return configured && configured.length > 0 ? configured : "cg";
+}
+
+function checkCoinGeckoCliAvailability(env = process.env) {
+  const command = resolveCoinGeckoCliCommand(env);
+  const result = spawnSync(command, ["--version"], {
+    env,
+    stdio: "pipe",
+    encoding: "utf8",
+    timeout: 5000,
+  });
+
+  const stdout = result.stdout?.trim() ?? "";
+  return {
+    available: !result.error && (result.status ?? 1) === 0,
+    command,
+    version: stdout || null,
+    ...(result.error ? { error: result.error.message } : {}),
+    ...(result.status !== undefined ? { exitCode: result.status } : {}),
+  };
+}
+
+function hasCoinGeckoOutputFlag(args) {
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg === "-o" || arg === "--output") {
+      return true;
+    }
+    if (arg.startsWith("--output=") || arg.startsWith("-o=")) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function coinGeckoArgsUseJsonOutput(args) {
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if ((arg === "-o" || arg === "--output") && args[index + 1] === "json") {
+      return true;
+    }
+    if (arg === "--output=json" || arg === "-o=json") {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isCoinGeckoInteractiveCommand(action, args, jsonOutput) {
+  if (action === "tui") {
+    return true;
+  }
+  if (action === "watch") {
+    return !jsonOutput && !coinGeckoArgsUseJsonOutput(args);
+  }
+  return false;
+}
+
+function buildCoinGeckoInstallHint(command = "cg") {
+  return [
+    `Install ${command} with one of:`,
+    "  brew install coingecko/coingecko-cli/cg",
+    "  curl -sSfL https://raw.githubusercontent.com/coingecko/coingecko-cli/main/install.sh | sh",
+  ].join("\n");
 }
 
 async function applyRuntimeDefaults(invocation, env = process.env) {
@@ -1904,6 +3071,45 @@ async function runProxyArgs(proxyArgs, env = process.env, options = {}) {
   }
 }
 
+async function runExternalCommand(command, args, env = process.env, options = {}) {
+  const captureStdout = Boolean(options.captureStdout);
+  const captureStderr = Boolean(options.captureStderr);
+  const child = spawn(command, args, {
+    stdio: [
+      "inherit",
+      captureStdout ? "pipe" : "inherit",
+      captureStderr ? "pipe" : "inherit",
+    ],
+    env,
+  });
+
+  return await new Promise((resolvePromise, reject) => {
+    let stdout = "";
+    let stderr = "";
+
+    if (captureStdout) {
+      child.stdout.on("data", (chunk) => {
+        stdout += String(chunk);
+      });
+    }
+
+    if (captureStderr) {
+      child.stderr.on("data", (chunk) => {
+        stderr += String(chunk);
+      });
+    }
+
+    child.on("error", reject);
+    child.on("exit", (code, signal) => {
+      resolvePromise({
+        exitCode: signal ? 1 : (code ?? 0),
+        stdout,
+        stderr,
+      });
+    });
+  });
+}
+
 async function executeHttpInvocation(invocation) {
   const payload = await requestJson(invocation.url, {
     method: invocation.method,
@@ -1936,6 +3142,18 @@ async function executeLocalInvocation(invocation, env = process.env) {
       return executePromptGoalAction(invocation);
     case "plan_goal":
       return executePlanGoalAction(invocation);
+    case "recipe_run":
+      return executeRecipeRunAction(invocation, env);
+    case "recipe_recommend":
+      return executeRecipeRecommendAction(invocation);
+    case "providers_directory":
+      return executeProvidersDirectoryAction(invocation);
+    case "market_doctor":
+      return executeMarketDoctorAction(invocation, env);
+    case "market_passthrough":
+      return executeMarketPassthroughAction(invocation, env);
+    case "catalog_update":
+      return executeCatalogUpdateAction(invocation, env);
     case "config_get":
       return executeConfigGetAction(invocation, env);
     case "config_set":
@@ -1948,8 +3166,18 @@ async function executeLocalInvocation(invocation, env = process.env) {
       return executeHistoryAction(invocation, env);
     case "init_agent":
       return executeInitAgentAction(invocation, env);
+    case "init_automation":
+      return executeInitAutomationAction(invocation);
     case "trade_polymarket":
       return executeTradePolymarketAction(invocation, env);
+    case "watch":
+      return executeWatchAction(invocation);
+    case "export_mcp_config":
+      return executeExportMcpConfigAction(invocation, env);
+    case "export_openapi":
+      return executeExportOpenApiAction(invocation);
+    case "changelog":
+      return executeChangelogAction(invocation, env);
     default:
       throw new Error(`Unsupported local action: ${invocation.action}`);
   }
@@ -2175,6 +3403,283 @@ async function executePlanGoalAction(invocation) {
   };
 }
 
+async function executeRecipeRunAction(invocation, env = process.env) {
+  let proxyArgs = [...invocation.forwardedArgs];
+
+  if (invocation.fromFile) {
+    const raw = readFileSync(invocation.fromFile, "utf8");
+    proxyArgs = replaceOrAppendBodyArg(proxyArgs, raw);
+  }
+
+  const result = await runProxyArgs([
+    "--method",
+    "POST",
+    "--header",
+    "Content-Type: application/json",
+    ...proxyArgs,
+    `${invocation.baseUrl}/v1/recipes/${encodeURIComponent(invocation.slug)}/run`,
+  ], env, {
+    useOverlay: true,
+    captureStdout: true,
+  });
+
+  if (result.exitCode !== 0) {
+    return result;
+  }
+
+  const rawOutput = result.stdout.trim();
+  const parsed = tryParseJson(rawOutput);
+  const inspectionUrl = extractInspectionUrl(parsed);
+  const finalPayload = invocation.wait && inspectionUrl
+    ? await waitForRecipeRunCompletion(invocation.baseUrl, inspectionUrl)
+    : parsed;
+
+  if (invocation.savePath) {
+    const { save402botTextFile } = await loadRuntime();
+    save402botTextFile(
+      invocation.savePath,
+      typeof finalPayload === "string" ? finalPayload : stringifyJson(finalPayload ?? parsed ?? rawOutput),
+    );
+  }
+
+  const openResult = invocation.open ? await attemptOpenUrl(inspectionUrl) : null;
+  const payload = {
+    schema: "402bot/recipe-run/v1",
+    slug: invocation.slug,
+    inspectionUrl: inspectionUrl ?? null,
+    waited: Boolean(invocation.wait && inspectionUrl),
+    savedTo: invocation.savePath,
+    opened: openResult?.ok ?? false,
+    openMessage: openResult?.message ?? null,
+    result: finalPayload ?? parsed ?? rawOutput,
+  };
+
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(payload) : formatRecipeRunPayload(payload),
+  };
+}
+
+async function executeRecipeRecommendAction(invocation) {
+  const discover = await requestDiscoverGoal(invocation.baseUrl, {
+    goal: invocation.goal,
+    network: DEFAULT_NETWORK,
+    strategy: "balanced",
+    limit: 20,
+  });
+
+  const directMatches = (discover.results ?? [])
+    .filter((entry) => entry.endpointId?.startsWith("recipe-"))
+    .map((entry) => ({
+      slug: entry.endpointId.slice("recipe-".length),
+      reason: entry.reasons?.[0] ?? "Resolved as a live recipe candidate via discovery.",
+      score: entry.score ?? null,
+      priceUsdc: entry.priceUsdc ?? null,
+      resource: entry.resource ?? null,
+    }));
+
+  const search = directMatches.length > 0
+    ? { totalRecipes: directMatches.length, results: [] }
+    : await requestJson(
+      buildUrlWithQuery(`${invocation.baseUrl}/v1/recipes/search`, {
+        q: invocation.goal,
+        limit: DEFAULT_RECIPE_LIMIT,
+        sort: DEFAULT_RECIPE_SORT,
+      }),
+    );
+
+  const fallbackMatches = directMatches.length > 0
+    ? []
+    : (search.results ?? []).map((entry) => ({
+        slug: entry.recipe.slug,
+        displayName: entry.recipe.displayName,
+        summary: entry.recipe.summary,
+        priceUsdc: entry.recipe.priceUsdc,
+        capabilities: entry.recipe.capabilities ?? [],
+        resource: `${invocation.baseUrl}/v1/recipes/${encodeURIComponent(entry.recipe.slug)}/run`,
+        reason: "Matched the recipe search index for this goal.",
+      }));
+
+  const payload = {
+    schema: "402bot/recipe-recommend/v1",
+    goal: invocation.goal,
+    resolvedCapability: discover.resolvedCapability ?? null,
+    recommendations: directMatches.length > 0 ? directMatches : fallbackMatches,
+  };
+
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(payload) : formatRecipeRecommendPayload(payload),
+  };
+}
+
+async function executeProvidersDirectoryAction(invocation) {
+  const payload = await requestJson(`${invocation.baseUrl}/v1/providers`);
+  const query = invocation.query?.trim().toLowerCase() ?? null;
+  const filtered = (payload.results ?? []).filter((entry) => {
+    if (invocation.recommendation && entry.readiness?.recommendation !== invocation.recommendation) {
+      return false;
+    }
+    if (!query) {
+      return true;
+    }
+    const haystack = [
+      entry.provider?.slug,
+      entry.provider?.displayName,
+      entry.provider?.description,
+      entry.provider?.homepage,
+      ...(entry.provider?.capabilities ?? []),
+    ].filter(Boolean).join(" ").toLowerCase();
+    return haystack.includes(query);
+  }).slice(0, invocation.limit);
+
+  const response = {
+    schema: "402bot/providers-directory/v1",
+    mode: invocation.mode,
+    query: invocation.query,
+    totalProviders: payload.totalProviders ?? payload.results?.length ?? filtered.length,
+    results: filtered.map(normalizeProviderDirectoryEntry),
+  };
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(response) : formatProvidersDirectoryPayload(response),
+  };
+}
+
+async function executeMarketDoctorAction(invocation, env = process.env) {
+  const availability = checkCoinGeckoCliAvailability(env);
+  let statusOutput = null;
+
+  if (availability.available) {
+    const status = await runExternalCommand(availability.command, ["status"], env, {
+      captureStdout: true,
+      captureStderr: true,
+    });
+    statusOutput = (status.stdout || status.stderr || "").trim() || null;
+  }
+
+  const payload = {
+    schema: "402bot/market-doctor/v1",
+    marketCli: {
+      ...availability,
+      statusOutput,
+      installHint: buildCoinGeckoInstallHint(invocation.command),
+      supportedCommands: [...COINGECKO_ALLOWED_COMMANDS].filter((entry) => !entry.startsWith("-")),
+    },
+  };
+
+  if (invocation.jsonOutput) {
+    return {
+      exitCode: availability.available ? 0 : 1,
+      output: stringifyJson(payload),
+    };
+  }
+
+  const lines = [
+    `CoinGecko CLI: ${availability.available ? "available" : "missing"}`,
+    `Command: ${availability.command}`,
+    availability.version ? `Version: ${availability.version}` : null,
+    statusOutput ? `Status: ${statusOutput}` : null,
+    !availability.available ? "" : null,
+    !availability.available ? buildCoinGeckoInstallHint(invocation.command) : null,
+  ].filter(Boolean);
+
+  return {
+    exitCode: availability.available ? 0 : 1,
+    output: lines.join("\n"),
+  };
+}
+
+async function executeMarketPassthroughAction(invocation, env = process.env) {
+  const availability = checkCoinGeckoCliAvailability(env);
+  if (!availability.available) {
+    throw new Error(
+      `CoinGecko CLI is not available from ${availability.command}.\n${buildCoinGeckoInstallHint(invocation.command)}`,
+    );
+  }
+
+  const finalArgs = [...invocation.forwardedArgs];
+  if (
+    invocation.jsonOutput &&
+    COINGECKO_JSON_OUTPUT_COMMANDS.has(invocation.marketAction) &&
+    !hasCoinGeckoOutputFlag(finalArgs)
+  ) {
+    finalArgs.push("-o", "json");
+  }
+
+  const interactive = isCoinGeckoInteractiveCommand(invocation.marketAction, finalArgs, invocation.jsonOutput);
+  const result = await runExternalCommand(availability.command, finalArgs, env, {
+    captureStdout: !interactive,
+    captureStderr: !interactive,
+  });
+
+  if (result.exitCode !== 0) {
+    const detail = (result.stderr || result.stdout).trim();
+    throw new Error(detail || `CoinGecko CLI exited with code ${result.exitCode}.`);
+  }
+
+  if (interactive) {
+    return { exitCode: 0, output: "" };
+  }
+
+  const stdout = result.stdout.trim();
+  if (!stdout) {
+    return { exitCode: 0, output: "" };
+  }
+
+  if (invocation.jsonOutput) {
+    if (COINGECKO_INTRINSIC_JSON_COMMANDS.has(invocation.marketAction) || coinGeckoArgsUseJsonOutput(finalArgs)) {
+      return { exitCode: 0, output: stdout };
+    }
+
+    return {
+      exitCode: 0,
+      output: stringifyJson({
+        schema: "402bot/market-passthrough/v1",
+        command: availability.command,
+        args: finalArgs,
+        stdout,
+      }),
+    };
+  }
+
+  return {
+    exitCode: 0,
+    output: stdout,
+  };
+}
+
+async function executeCatalogUpdateAction(invocation, env = process.env) {
+  const latest = await fetchCatalogState(invocation.baseUrl);
+  const { get402botCatalogSnapshotPath, get402botLlmsFullPath, get402botLlmsPath, load402botJsonFile, save402botJsonFile, save402botTextFile } =
+    await loadRuntime();
+  const previous = load402botJsonFile(get402botCatalogSnapshotPath(env), null);
+  const diff = buildCatalogDiff(previous, latest);
+
+  save402botJsonFile(get402botCatalogSnapshotPath(env), latest);
+  save402botTextFile(get402botLlmsPath(env), latest.llmsText);
+  save402botTextFile(get402botLlmsFullPath(env), latest.llmsFullText);
+
+  const payload = {
+    schema: "402bot/catalog-update/v1",
+    updatedAt: latest.generatedAt,
+    cacheUpdated: true,
+    cachePath: get402botCatalogSnapshotPath(env),
+    recipes: latest.recipes.totalRecipes,
+    providers: latest.providers.totalProviders,
+    llms: {
+      llmsPath: get402botLlmsPath(env),
+      llmsFullPath: get402botLlmsFullPath(env),
+    },
+    diff,
+  };
+
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(payload) : formatCatalogUpdatePayload(payload),
+  };
+}
+
 async function executeConfigGetAction(invocation, env = process.env) {
   const payload = await buildConfigPayload(env);
   const response = invocation.key
@@ -2220,7 +3725,17 @@ async function executeConfigSetAction(invocation, env = process.env) {
 }
 
 async function executeDoctorAction(invocation, env = process.env) {
+  let fixes = [];
+  if (invocation.fix) {
+    fixes = await applyDoctorFixes(env);
+  }
   const payload = await buildDoctorPayload(env);
+  if (invocation.fix) {
+    payload.fix = {
+      attempted: true,
+      applied: fixes,
+    };
+  }
   return {
     exitCode: 0,
     output: invocation.jsonOutput ? stringifyJson(payload) : formatDoctorPayload(payload),
@@ -2278,6 +3793,107 @@ async function executeInitAgentAction(invocation, env = process.env) {
   return {
     exitCode: 0,
     output: invocation.jsonOutput ? stringifyJson(payload) : buildInitAgentText(payload),
+  };
+}
+
+async function executeInitAutomationAction(invocation) {
+  const payload = buildInitAutomationPayload(invocation);
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(payload) : formatInitAutomationPayload(payload),
+  };
+}
+
+async function executeExportMcpConfigAction(invocation, env = process.env) {
+  const payload = buildInitAgentPayload({
+    client: invocation.client,
+    campaignId: null,
+    env: {
+      ...env,
+      BOT402_API_URL: invocation.baseUrl,
+      BOT402_MCP_URL: invocation.remoteMcpBaseUrl,
+    },
+  });
+  const response = {
+    schema: "402bot/export-mcp-config/v1",
+    client: invocation.client,
+    remoteMcpUrl: payload.remoteMcpUrl,
+    clients: payload.clients,
+  };
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(response) : formatExportMcpConfigPayload(response),
+  };
+}
+
+async function executeExportOpenApiAction(invocation) {
+  const payload = buildOpenApiExportPayload(invocation);
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(payload) : formatExportOpenApiPayload(payload),
+  };
+}
+
+async function executeWatchAction(invocation) {
+  const intervalWindow = parseTimeWindowSpecLike(invocation.interval);
+  const timeoutWindow = parseTimeWindowSpecLike(invocation.timeout);
+  const start = Date.now();
+  const initialSnapshot = await fetchWatchSnapshot(invocation);
+  const events = [buildWatchEvent("initial", initialSnapshot)];
+  let current = initialSnapshot;
+  let webhookDeliveries = [];
+
+  if (!invocation.once) {
+    while (Date.now() - start < (timeoutWindow?.ms ?? 0)) {
+      await delay(intervalWindow?.ms ?? 30000);
+      const next = await fetchWatchSnapshot(invocation);
+      if (next.hash !== current.hash) {
+        const event = buildWatchEvent("changed", next, current);
+        events.push(event);
+        if (invocation.webhookUrl) {
+          webhookDeliveries.push(await sendWatchWebhook(invocation.webhookUrl, event));
+        }
+        current = next;
+        if (invocation.exitOnChange) {
+          break;
+        }
+      }
+    }
+  }
+
+  const payload = {
+    schema: "402bot/watch/v1",
+    targetType: invocation.targetType,
+    targetValue: invocation.targetValue,
+    interval: invocation.interval,
+    timeout: invocation.timeout,
+    once: invocation.once,
+    webhookUrl: invocation.webhookUrl,
+    deliveries: webhookDeliveries,
+    events,
+  };
+
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(payload) : formatWatchPayload(payload),
+  };
+}
+
+async function executeChangelogAction(invocation, env = process.env) {
+  const latest = await fetchCatalogState(invocation.baseUrl);
+  const { get402botCatalogSnapshotPath, load402botJsonFile } = await loadRuntime();
+  const previous = load402botJsonFile(get402botCatalogSnapshotPath(env), null);
+  const diff = buildCatalogDiff(previous, latest);
+  const payload = {
+    schema: "402bot/changelog/v1",
+    comparedAt: latest.generatedAt,
+    hasBaseline: Boolean(previous),
+    diff,
+  };
+
+  return {
+    exitCode: 0,
+    output: invocation.jsonOutput ? stringifyJson(payload) : formatChangelogPayload(payload),
   };
 }
 
@@ -2369,6 +3985,7 @@ async function buildDoctorPayload(env = process.env) {
   const proxyMerged = buildMergedProxyConfig(env);
   const wallet = resolveWallet(env);
   const proxy = checkProxyAvailability(env);
+  const marketCli = checkCoinGeckoCliAvailability(env);
   const apiHealth = await checkHttpReachability(`${apiBaseUrl(env)}/healthz`, {
     method: "GET",
   });
@@ -2432,6 +4049,7 @@ async function buildDoctorPayload(env = process.env) {
       },
     },
     proxy,
+    marketCli,
     api: apiHealth,
     mcp: {
       ...mcpHealth,
@@ -2597,6 +4215,364 @@ async function requestContinueDiscoverySession(baseUrl, body) {
   });
 }
 
+async function fetchAllRecipes(baseUrl) {
+  return requestJson(buildUrlWithQuery(`${baseUrl}/v1/recipes`, {
+    limit: 200,
+    sort: DEFAULT_RECIPE_SORT,
+  }));
+}
+
+async function fetchAllProviders(baseUrl) {
+  return requestJson(`${baseUrl}/v1/providers`);
+}
+
+async function fetchCatalogState(baseUrl) {
+  const [recipes, providers, llmsText, llmsFullText] = await Promise.all([
+    fetchAllRecipes(baseUrl),
+    fetchAllProviders(baseUrl),
+    fetch(LLMS_URL).then((response) => response.text()),
+    fetch(LLMS_FULL_URL).then((response) => response.text()),
+  ]);
+
+  return {
+    schema: "402bot/catalog-state/v1",
+    generatedAt: new Date().toISOString(),
+    recipes: buildRecipeDirectoryJsonPayload(recipes, { mode: "list" }),
+    providers: {
+      totalProviders: providers.totalProviders ?? providers.results?.length ?? 0,
+      results: (providers.results ?? []).map(normalizeProviderDirectoryEntry),
+    },
+    llmsText,
+    llmsFullText,
+  };
+}
+
+function buildCatalogDiff(previous, latest) {
+  const previousRecipes = new Map((previous?.recipes?.results ?? []).map((entry) => [entry.slug, entry]));
+  const latestRecipes = new Map((latest?.recipes?.results ?? []).map((entry) => [entry.slug, entry]));
+  const previousProviders = new Map((previous?.providers?.results ?? []).map((entry) => [entry.slug, entry]));
+  const latestProviders = new Map((latest?.providers?.results ?? []).map((entry) => [entry.slug, entry]));
+
+  return {
+    recipes: buildEntityDiff(previousRecipes, latestRecipes, compareRecipeEntries),
+    providers: buildEntityDiff(previousProviders, latestProviders, compareProviderEntries),
+  };
+}
+
+function buildEntityDiff(previousMap, latestMap, compare) {
+  const added = [];
+  const removed = [];
+  const changed = [];
+
+  for (const [key, value] of latestMap.entries()) {
+    if (!previousMap.has(key)) {
+      added.push(value);
+      continue;
+    }
+    const delta = compare(previousMap.get(key), value);
+    if (delta) {
+      changed.push({ key, ...delta });
+    }
+  }
+
+  for (const [key, value] of previousMap.entries()) {
+    if (!latestMap.has(key)) {
+      removed.push(value);
+    }
+  }
+
+  return { added, removed, changed };
+}
+
+function parseRecipeRunArgs(args) {
+  const positionals = [];
+  const forwardedArgs = [];
+  const options = {
+    wait: false,
+    open: false,
+    savePath: null,
+    fromFile: null,
+  };
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg === "--wait") {
+      options.wait = true;
+      continue;
+    }
+    if (arg === "--open") {
+      options.open = true;
+      continue;
+    }
+    if (arg === "--save") {
+      const value = args[index + 1];
+      if (!value) {
+        return { ok: false, message: "--save requires a value." };
+      }
+      options.savePath = value;
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--save=")) {
+      options.savePath = arg.slice("--save=".length);
+      continue;
+    }
+    if (arg === "--from-file") {
+      const value = args[index + 1];
+      if (!value) {
+        return { ok: false, message: "--from-file requires a value." };
+      }
+      options.fromFile = value;
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--from-file=")) {
+      options.fromFile = arg.slice("--from-file=".length);
+      continue;
+    }
+    if (positionals.length === 0 && !arg.startsWith("-")) {
+      positionals.push(arg);
+      continue;
+    }
+    if (!arg.startsWith("-")) {
+      positionals.push(arg);
+      continue;
+    }
+    forwardedArgs.push(arg);
+    if (!arg.includes("=") && flagRequiresValue(arg)) {
+      const value = args[index + 1];
+      if (value !== undefined) {
+        forwardedArgs.push(value);
+        index += 1;
+      }
+    }
+  }
+
+  return { ok: true, positionals, forwardedArgs, options };
+}
+
+function compareRecipeEntries(previous, latest) {
+  const changes = [];
+  if (previous.priceUsdc !== latest.priceUsdc) {
+    changes.push("price");
+  }
+  if (previous.summary !== latest.summary) {
+    changes.push("summary");
+  }
+  if (JSON.stringify(previous.capabilities ?? []) !== JSON.stringify(latest.capabilities ?? [])) {
+    changes.push("capabilities");
+  }
+  return changes.length ? { slug: latest.slug, displayName: latest.displayName, changes } : null;
+}
+
+function compareProviderEntries(previous, latest) {
+  const changes = [];
+  if (previous.recommendation !== latest.recommendation) {
+    changes.push("recommendation");
+  }
+  if (previous.readinessSummary !== latest.readinessSummary) {
+    changes.push("readiness");
+  }
+  if (previous.endpointCount !== latest.endpointCount) {
+    changes.push("endpointCount");
+  }
+  return changes.length ? { slug: latest.slug, displayName: latest.displayName, changes } : null;
+}
+
+function stripParsedOptionArgs(args, optionSpecs) {
+  const flagMap = new Map();
+  for (const spec of optionSpecs) {
+    for (const flag of spec.flags) {
+      flagMap.set(flag, spec);
+    }
+  }
+
+  const preserved = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    const baseFlag = arg.includes("=") ? arg.split("=")[0] : arg;
+    const spec = flagMap.get(baseFlag);
+    if (!spec) {
+      preserved.push(arg);
+      continue;
+    }
+    if (spec.type !== "boolean" && !arg.includes("=")) {
+      index += 1;
+    }
+  }
+  return preserved;
+}
+
+function replaceOrAppendBodyArg(args, body) {
+  const next = [...args];
+  for (let index = 0; index < next.length; index += 1) {
+    if (next[index] === "--body") {
+      next[index + 1] = body;
+      return next;
+    }
+    if (next[index].startsWith("--body=")) {
+      next[index] = `--body=${body}`;
+      return next;
+    }
+  }
+  next.push("--body", body);
+  return next;
+}
+
+function extractInspectionUrl(payload) {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+  return payload.inspectionUrl ?? payload.run?.inspectionUrl ?? payload.result?.inspectionUrl ?? null;
+}
+
+async function waitForRecipeRunCompletion(baseUrl, inspectionUrl) {
+  const resolvedUrl = inspectionUrl.startsWith("http") ? inspectionUrl : `${baseUrl}${inspectionUrl}`;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const payload = await requestJson(resolvedUrl);
+    const status = payload.run?.status ?? payload.status ?? null;
+    if (status && !["queued", "running", "pending"].includes(status)) {
+      return payload;
+    }
+    await delay(2000);
+  }
+  return requestJson(resolvedUrl);
+}
+
+async function attemptOpenUrl(url) {
+  if (!url) {
+    return { ok: false, message: "No inspection URL was returned to open." };
+  }
+  const command = process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
+  try {
+    spawn(command, [url], {
+      detached: true,
+      stdio: "ignore",
+    }).unref();
+    return { ok: true, message: `Opened ${url}` };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+async function applyDoctorFixes(env = process.env) {
+  const { load402botConfig, resolveWallet, save402botConfig } = await loadRuntime();
+  const current = load402botConfig(env);
+  const wallet = resolveWallet(env);
+  const next = { ...current };
+  const applied = [];
+
+  if (!next.network) {
+    next.network = DEFAULT_NETWORK;
+    applied.push("Set default network to Base.");
+  }
+  if (!next.favoriteRecipe) {
+    next.favoriteRecipe = "wallet-intel-brief";
+    applied.push("Set favorite recipe to wallet-intel-brief.");
+  }
+  if (!next.favoriteWallet && wallet.evmAddress) {
+    next.favoriteWallet = wallet.evmAddress;
+    applied.push("Set favorite wallet from the configured Base wallet.");
+  }
+
+  if (applied.length > 0) {
+    save402botConfig(next, env);
+  }
+  return applied;
+}
+
+async function fetchWatchSnapshot(invocation) {
+  if (invocation.targetType === "provider") {
+    const payload = buildProviderDetailJsonPayload(await requestJson(`${invocation.baseUrl}/v1/providers/${encodeURIComponent(invocation.targetValue)}`));
+    return {
+      targetType: invocation.targetType,
+      targetValue: invocation.targetValue,
+      summary: `${payload.provider?.displayName ?? invocation.targetValue} is ${payload.readiness?.recommendation ?? "unknown"}.`,
+      payload,
+      hash: JSON.stringify(payload),
+    };
+  }
+
+  if (invocation.targetType === "endpoint") {
+    const payload = {
+      schema: "402bot/inspect-endpoint/v1",
+      analytics: await requestJson(buildUrlWithQuery(`${invocation.baseUrl}/analytics/endpoint/${encodeURIComponent(invocation.targetValue)}`, {
+        days: timeWindowToLookbackDays(invocation.since),
+      })),
+    };
+    return {
+      targetType: invocation.targetType,
+      targetValue: invocation.targetValue,
+      summary: `${invocation.targetValue} trust ${payload.analytics?.trustProfile?.status ?? "n/a"} with ${payload.analytics?.payments?.totalPaymentCount ?? 0} payments.`,
+      payload,
+      hash: JSON.stringify(payload),
+    };
+  }
+
+  const payload = {
+    schema: "402bot/inspect-agent/v1",
+    analytics: await requestJson(buildUrlWithQuery(`${invocation.baseUrl}/analytics/agent/${encodeURIComponent(invocation.targetValue)}`, {
+      days: timeWindowToLookbackDays(invocation.since),
+      network: DEFAULT_NETWORK,
+    })),
+  };
+  return {
+    targetType: invocation.targetType,
+    targetValue: invocation.targetValue,
+    summary: `${invocation.targetValue} has ${payload.analytics?.payments?.totalPaymentCount ?? 0} payments and ${payload.analytics?.oracleUsage?.totalPaidRouteRequests ?? 0} paid route requests.`,
+    payload,
+    hash: JSON.stringify(payload),
+  };
+}
+
+function buildWatchEvent(type, snapshot, previous = null) {
+  return {
+    type,
+    detectedAt: new Date().toISOString(),
+    targetType: snapshot.targetType,
+    targetValue: snapshot.targetValue,
+    summary: previous ? `${previous.summary} -> ${snapshot.summary}` : snapshot.summary,
+    current: snapshot.payload,
+    previous: previous?.payload ?? null,
+  };
+}
+
+async function sendWatchWebhook(url, event) {
+  try {
+    await requestJson(url, {
+      method: "POST",
+      jsonBody: event,
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    return { ok: true, url };
+  } catch (error) {
+    return {
+      ok: false,
+      url,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+function timeWindowToLookbackDays(value) {
+  const window = value ? parseTimeWindowSpecLike(value) : null;
+  if (!window) {
+    return DEFAULT_LOOKBACK_DAYS;
+  }
+  return Math.max(1, Math.ceil(window.ms / (24 * 60 * 60 * 1000)));
+}
+
+function delay(ms) {
+  return new Promise((resolvePromise) => {
+    setTimeout(resolvePromise, ms);
+  });
+}
+
 function normalizeDiscoverFilters(filters = {}) {
   return Object.fromEntries(
     Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== ""),
@@ -2757,6 +4733,10 @@ function buildStableHttpPayload(format, payload, meta = {}) {
   switch (format) {
     case "recipes":
       return buildRecipeDirectoryJsonPayload(payload, meta);
+    case "recipe_detail":
+      return buildRecipeDetailJsonPayload(payload);
+    case "provider_detail":
+      return buildProviderDetailJsonPayload(payload);
     default:
       return payload;
   }
@@ -2780,6 +4760,29 @@ function buildRecipeDirectoryJsonPayload(payload, meta = {}) {
       qualityScore: entry.stats?.qualityScore ?? null,
       freshnessScore: entry.stats?.freshnessScore ?? null,
     })),
+  };
+}
+
+function buildRecipeDetailJsonPayload(payload) {
+  return {
+    schema: "402bot/recipe-detail/v1",
+    recipe: payload.recipe,
+    stats: payload.stats ?? null,
+    creator: payload.creator ?? payload.owner ?? null,
+    marketplace: payload.marketplace ?? payload.recipe?.metadata?.marketplace ?? null,
+  };
+}
+
+function buildProviderDetailJsonPayload(payload) {
+  return {
+    schema: "402bot/provider-detail/v1",
+    provider: payload.provider,
+    readiness: payload.readiness ?? null,
+    endpoints: payload.endpoints ?? [],
+    telemetry: payload.telemetry ?? null,
+    relatedRecipes: payload.relatedRecipes ?? [],
+    profileUrl: payload.profileUrl ?? null,
+    share: payload.share ?? null,
   };
 }
 
@@ -2817,6 +4820,10 @@ function formatInvocationPayload(format, payload, meta = {}) {
   switch (format) {
     case "recipes":
       return formatRecipeDirectoryPayload(buildRecipeDirectoryJsonPayload(payload, meta), meta);
+    case "recipe_detail":
+      return formatRecipeDetailPayload(buildRecipeDetailJsonPayload(payload));
+    case "provider_detail":
+      return formatProviderDetailPayload(buildProviderDetailJsonPayload(payload));
     default:
       return JSON.stringify(payload, null, 2);
   }
@@ -3004,6 +5011,174 @@ function formatRecipeDirectoryPayload(payload) {
   return lines.join("\n");
 }
 
+function normalizeProviderDirectoryEntry(entry) {
+  return {
+    slug: entry.provider?.slug ?? null,
+    displayName: entry.provider?.displayName ?? null,
+    summary: entry.provider?.description ?? null,
+    homepage: entry.provider?.homepage ?? null,
+    docsUrl: entry.provider?.docsUrl ?? null,
+    recommendation: entry.readiness?.recommendation ?? null,
+    readinessSummary: entry.readiness?.summary ?? null,
+    capabilityCount: entry.provider?.capabilities?.length ?? 0,
+    endpointCount: entry.provider?.endpointCount ?? 0,
+    verificationStatus: entry.provider?.verificationStatus ?? null,
+    listingStatus: entry.provider?.listingStatus ?? null,
+    profileUrl: entry.profileUrl ?? null,
+  };
+}
+
+function formatRecipeDetailPayload(payload) {
+  const recipe = payload.recipe ?? {};
+  return [
+    `${recipe.displayName ?? recipe.slug ?? "Recipe"} [${recipe.slug ?? "n/a"}]`,
+    recipe.summary ?? "No summary returned.",
+    `Price: ${formatMoney(recipe.priceUsdc)}`,
+    `Capabilities: ${(recipe.capabilities ?? []).join(", ") || "n/a"}`,
+    `Cluster: ${payload.marketplace?.cluster ?? "n/a"}`,
+    payload.creator?.displayName ? `Creator: ${payload.creator.displayName}` : null,
+    payload.stats ? `Runs: ${payload.stats.paidRunCount ?? 0} | quality ${formatNumber(payload.stats.qualityScore, 2)} | freshness ${formatNumber(payload.stats.freshnessScore, 2)}` : null,
+  ].filter(Boolean).join("\n");
+}
+
+function formatProviderDetailPayload(payload) {
+  const provider = payload.provider ?? {};
+  return [
+    `${provider.displayName ?? provider.slug ?? "Provider"} [${provider.slug ?? "n/a"}]`,
+    provider.description ?? "No description returned.",
+    `Homepage: ${provider.homepage ?? "n/a"}`,
+    `Docs: ${provider.docsUrl ?? "n/a"}`,
+    `Recommendation: ${payload.readiness?.recommendation ?? "n/a"}`,
+    payload.readiness?.summary ? `Readiness: ${payload.readiness.summary}` : null,
+    `Endpoints: ${(payload.endpoints ?? []).length}`,
+    `Capabilities: ${(provider.capabilities ?? []).slice(0, 12).join(", ") || "n/a"}`,
+  ].filter(Boolean).join("\n");
+}
+
+function formatProvidersDirectoryPayload(payload) {
+  const label = payload.query ? `Providers matching "${payload.query}"` : "Providers";
+  const lines = [`${label}: ${payload.totalProviders}`, ""];
+  for (const [index, entry] of payload.results.entries()) {
+    lines.push(
+      `${index + 1}. ${entry.displayName} [${entry.slug}]`,
+      `   recommendation ${entry.recommendation ?? "n/a"} | endpoints ${entry.endpointCount} | capabilities ${entry.capabilityCount}`,
+      `   ${entry.summary ?? "No provider summary returned."}`,
+    );
+  }
+  if (payload.results.length === 0) {
+    lines.push("No providers matched the current filters.");
+  }
+  return lines.join("\n");
+}
+
+function formatRecipeRecommendPayload(payload) {
+  const lines = [
+    `Goal: ${payload.goal}`,
+    `Resolved capability: ${payload.resolvedCapability ?? "n/a"}`,
+    "",
+  ];
+  for (const [index, entry] of payload.recommendations.entries()) {
+    lines.push(
+      `${index + 1}. ${entry.displayName ?? entry.slug} [${entry.slug}]`,
+      `   price ${formatMoney(entry.priceUsdc)}${entry.resource ? ` | ${entry.resource}` : ""}`,
+      `   ${entry.reason}`,
+    );
+  }
+  if (payload.recommendations.length === 0) {
+    lines.push("No recipe recommendations matched this goal.");
+  }
+  return lines.join("\n");
+}
+
+function formatRecipeRunPayload(payload) {
+  const lines = [
+    `Recipe run: ${payload.slug}`,
+    payload.inspectionUrl ? `Inspection URL: ${payload.inspectionUrl}` : "Inspection URL: not returned",
+    payload.savedTo ? `Saved output: ${payload.savedTo}` : null,
+    payload.openMessage ? `Open: ${payload.openMessage}` : null,
+  ].filter(Boolean);
+  if (payload.result) {
+    lines.push("", typeof payload.result === "string" ? payload.result : stringifyJson(payload.result));
+  }
+  return lines.join("\n");
+}
+
+function formatCatalogUpdatePayload(payload) {
+  return [
+    "Catalog updated.",
+    `Recipes: ${payload.recipes}`,
+    `Providers: ${payload.providers}`,
+    `Snapshot: ${payload.cachePath}`,
+    `llms.txt: ${payload.llms.llmsPath}`,
+    `llms-full.txt: ${payload.llms.llmsFullPath}`,
+    "",
+    formatCatalogDiffLines(payload.diff),
+  ].join("\n");
+}
+
+function formatWatchPayload(payload) {
+  const lines = [
+    `Watch target: ${payload.targetType} ${payload.targetValue}`,
+    `Events observed: ${payload.events.length}`,
+  ];
+  if (payload.webhookUrl) {
+    lines.push(`Webhook: ${payload.webhookUrl}`);
+  }
+  for (const event of payload.events) {
+    lines.push(
+      "",
+      `${event.type.toUpperCase()} ${event.detectedAt}`,
+      event.summary,
+    );
+  }
+  return lines.join("\n");
+}
+
+function formatExportMcpConfigPayload(payload) {
+  const sections = [
+    `Remote MCP URL: ${payload.remoteMcpUrl}`,
+  ];
+  for (const client of payload.clients) {
+    sections.push("", `${client.title}:`, client.snippet);
+  }
+  return sections.join("\n");
+}
+
+function formatExportOpenApiPayload(payload) {
+  return [
+    "OpenAPI-style surface export:",
+    `Base URL: ${payload.baseUrl}`,
+    "",
+    ...payload.paths.map((entry) => `${entry.method} ${entry.path} - ${entry.operationId}`),
+  ].join("\n");
+}
+
+function formatInitAutomationPayload(payload) {
+  return [
+    `${payload.title}:`,
+    "",
+    payload.template,
+  ].join("\n");
+}
+
+function formatChangelogPayload(payload) {
+  if (!payload.hasBaseline) {
+    return "No cached baseline found. Run `402bot catalog update` first to establish a catalog snapshot.";
+  }
+  return [
+    `Compared at: ${payload.comparedAt}`,
+    "",
+    formatCatalogDiffLines(payload.diff),
+  ].join("\n");
+}
+
+function formatCatalogDiffLines(diff) {
+  return [
+    `Recipes added: ${diff.recipes.added.length} | removed: ${diff.recipes.removed.length} | changed: ${diff.recipes.changed.length}`,
+    `Providers added: ${diff.providers.added.length} | removed: ${diff.providers.removed.length} | changed: ${diff.providers.changed.length}`,
+  ].join("\n");
+}
+
 function formatPromptPlan(payload) {
   const lines = [
     `Goal: ${payload.goal}`,
@@ -3122,9 +5297,11 @@ function formatDoctorPayload(payload) {
     "402bot doctor",
     "",
     `Overall: ${payload.status}`,
+    payload.fix?.attempted ? `Fixes applied: ${payload.fix.applied.length ? payload.fix.applied.join(" | ") : "none"}` : null,
     payload.warnings.length ? `Warnings: ${payload.warnings.join(" | ")}` : "Warnings: none",
     "",
     `Proxy: ${payload.proxy.available ? "ok" : "missing"}${payload.proxy.command ? ` | ${payload.proxy.command}` : ""}`,
+    `CoinGecko CLI: ${payload.marketCli?.available ? "ok" : "missing"}${payload.marketCli?.command ? ` | ${payload.marketCli.command}` : ""}${payload.marketCli?.version ? ` | ${payload.marketCli.version}` : ""}`,
     `API: ${payload.api.ok ? "ok" : "unreachable"} | ${payload.api.url}${payload.api.statusCode ? ` | ${payload.api.statusCode}` : ""}`,
     `MCP: ${payload.mcp.ok ? "ok" : "unreachable"} | ${payload.mcp.remoteUrl}${payload.mcp.statusCode ? ` | ${payload.mcp.statusCode}` : ""}`,
     `Wallet source: ${payload.wallet.source}`,
@@ -3139,7 +5316,7 @@ function formatDoctorPayload(payload) {
     `Ready to spend now: Base ${payload.wallet.readyToSpend.base ? "yes" : "no"} | Solana ${payload.wallet.readyToSpend.solana ? "yes" : "no"}`,
     "",
     `Config: ${payload.config.paths.botConfigPath}`,
-  ];
+  ].filter(Boolean);
 
   return lines.join("\n");
 }
@@ -3831,6 +6008,34 @@ function parseStrategyValue(value) {
   };
 }
 
+function parseParaswapSideValue(value) {
+  const normalized = String(value).trim().toUpperCase();
+  if (!["SELL", "BUY"].includes(normalized)) {
+    return {
+      ok: false,
+      message: "must be BUY or SELL.",
+    };
+  }
+  return {
+    ok: true,
+    value: normalized,
+  };
+}
+
+function parseJupiterSwapModeValue(value) {
+  const normalized = String(value).trim();
+  if (!["ExactIn", "ExactOut"].includes(normalized)) {
+    return {
+      ok: false,
+      message: "must be ExactIn or ExactOut.",
+    };
+  }
+  return {
+    ok: true,
+    value: normalized,
+  };
+}
+
 function parseRecipeSortValue(value) {
   if (!["relevance", "newest", "price_low", "quality"].includes(value)) {
     return {
@@ -3942,7 +6147,7 @@ function parseTimeWindowValue(value) {
   if (!parseTimeWindowSpecLike(value)) {
     return {
       ok: false,
-      message: "must be a relative duration like 30m, 6h, 7d, or an ISO timestamp.",
+      message: "must be a relative duration like 30s, 30m, 6h, 7d, or an ISO timestamp.",
     };
   }
   return {
@@ -3961,12 +6166,13 @@ function parseTimeWindowSpecLike(value, now = new Date()) {
   }
 
   const trimmed = value.trim();
-  const durationMatch = trimmed.match(/^(\d+)([mhdw])$/i);
+  const durationMatch = trimmed.match(/^(\d+)([smhdw])$/i);
   if (durationMatch) {
     const amount = Number(durationMatch[1]);
     const unit = durationMatch[2].toLowerCase();
     const multiplier =
-      unit === "m" ? 60 * 1000
+      unit === "s" ? 1000
+      : unit === "m" ? 60 * 1000
       : unit === "h" ? 60 * 60 * 1000
       : unit === "d" ? 24 * 60 * 60 * 1000
       : 7 * 24 * 60 * 60 * 1000;

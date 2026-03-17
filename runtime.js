@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { secp256k1 } from "@noble/curves/secp256k1.js";
@@ -42,6 +42,22 @@ export function get402botConfigDir(env = process.env) {
 
 export function get402botConfigPath(env = process.env) {
   return join(get402botConfigDir(env), "config.json");
+}
+
+export function get402botCacheDir(env = process.env) {
+  return join(get402botConfigDir(env), "cache");
+}
+
+export function get402botCatalogSnapshotPath(env = process.env) {
+  return join(get402botCacheDir(env), "catalog-snapshot.json");
+}
+
+export function get402botLlmsPath(env = process.env) {
+  return join(get402botCacheDir(env), "llms.txt");
+}
+
+export function get402botLlmsFullPath(env = process.env) {
+  return join(get402botCacheDir(env), "llms-full.txt");
 }
 
 export function getX402ProxyConfigDir(env = process.env) {
@@ -96,6 +112,42 @@ export function save402botConfig(config, env = process.env) {
   const normalized = normalize402botConfig(config);
   writeFileSync(get402botConfigPath(env), `${JSON.stringify(normalized, null, 2)}\n`, "utf8");
   return normalized;
+}
+
+export function load402botJsonFile(filePath, fallback = null) {
+  if (!existsSync(filePath)) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(readFileSync(filePath, "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+export function save402botJsonFile(filePath, value) {
+  mkdirSync(dirname(filePath), { recursive: true });
+  writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  return value;
+}
+
+export function load402botTextFile(filePath, fallback = "") {
+  if (!existsSync(filePath)) {
+    return fallback;
+  }
+
+  try {
+    return readFileSync(filePath, "utf8");
+  } catch {
+    return fallback;
+  }
+}
+
+export function save402botTextFile(filePath, value) {
+  mkdirSync(dirname(filePath), { recursive: true });
+  writeFileSync(filePath, value, "utf8");
+  return value;
 }
 
 function parseJsonc(raw) {
@@ -440,12 +492,13 @@ export function parseTimeWindowSpec(value, now = new Date()) {
   }
 
   const trimmed = value.trim();
-  const durationMatch = trimmed.match(/^(\d+)([mhdw])$/i);
+  const durationMatch = trimmed.match(/^(\d+)([smhdw])$/i);
   if (durationMatch) {
     const amount = Number(durationMatch[1]);
     const unit = durationMatch[2].toLowerCase();
     const multiplier =
-      unit === "m" ? 60 * 1000
+      unit === "s" ? 1000
+      : unit === "m" ? 60 * 1000
       : unit === "h" ? 60 * 60 * 1000
       : unit === "d" ? 24 * 60 * 60 * 1000
       : 7 * 24 * 60 * 60 * 1000;
